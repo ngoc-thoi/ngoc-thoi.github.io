@@ -12,7 +12,8 @@ import {
   X,
   Users,
   Share2,
-  Music
+  Music,
+  Lock
 } from 'lucide-react';
 import { 
   fetchGuestsFromGoogleSheet, 
@@ -25,6 +26,12 @@ import {
 import { weddingConfig } from '../config/weddingConfig';
 
 export default function AdminDashboard({ onClose, config = weddingConfig, onRefreshData }) {
+  const [isAuthenticated, setIsAuthenticated] = useState(() => {
+    return sessionStorage.getItem('wedding_admin_auth') === 'true';
+  });
+  const [passcode, setPasscode] = useState('');
+  const [passError, setPassError] = useState('');
+
   const [sheetInput, setSheetInput] = useState(() => {
     return localStorage.getItem('wedding_sheet_id') || weddingConfig.googleSheets.sheetId || '';
   });
@@ -160,7 +167,69 @@ export default function AdminDashboard({ onClose, config = weddingConfig, onRefr
     return matchesSearch && matchesGroup;
   });
 
-  const sentCount = Object.values(sentMap).filter(Boolean).length;
+  const handleLogin = (e) => {
+    e.preventDefault();
+    if (passcode.trim() === '2602') {
+      sessionStorage.setItem('wedding_admin_auth', 'true');
+      setIsAuthenticated(true);
+      setPassError('');
+    } else {
+      setPassError('Mật khẩu không chính xác. Vui lòng thử lại!');
+    }
+  };
+
+  if (!isAuthenticated) {
+    return (
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-950/80 backdrop-blur-md">
+        <div className="relative w-full max-w-sm bg-white rounded-3xl p-6 sm:p-8 shadow-2xl border-2 border-amber-300 text-center space-y-4">
+          <button
+            onClick={onClose}
+            className="absolute top-4 right-4 p-2 rounded-full text-stone-400 hover:text-stone-700 hover:bg-stone-100 transition-colors"
+            title="Đóng"
+          >
+            <X className="w-5 h-5" />
+          </button>
+
+          <div className="w-14 h-14 rounded-2xl bg-wedding-red-50 text-wedding-red flex items-center justify-center mx-auto shadow-inner border border-wedding-red-100">
+            <Lock className="w-7 h-7" />
+          </div>
+
+          <div>
+            <h3 className="font-serif text-2xl font-bold text-stone-900">Quản Trị Thiệp Cưới</h3>
+            <p className="text-xs text-stone-500 mt-1">Vui lòng nhập mã bảo vệ (Passcode) để truy cập</p>
+          </div>
+
+          <form onSubmit={handleLogin} className="space-y-4 pt-2">
+            <div>
+              <input
+                type="password"
+                value={passcode}
+                onChange={(e) => {
+                  setPasscode(e.target.value);
+                  setPassError('');
+                }}
+                placeholder="Nhập mã bảo vệ..."
+                maxLength={10}
+                autoFocus
+                className="w-full px-4 py-3 rounded-xl border border-stone-300 text-center tracking-widest text-xl font-bold text-stone-800 focus:border-wedding-red focus:outline-none bg-stone-50"
+              />
+              {passError && (
+                <p className="text-xs text-rose-600 font-medium mt-1.5">{passError}</p>
+              )}
+            </div>
+
+            <button
+              type="submit"
+              className="w-full py-3 rounded-xl bg-wedding-red hover:bg-wedding-red-700 text-amber-200 font-bold text-sm transition-colors shadow-md flex items-center justify-center gap-2"
+            >
+              <Lock className="w-4 h-4" />
+              <span>Mở Khóa Quản Trị</span>
+            </button>
+          </form>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="fixed inset-0 z-50 bg-stone-900/80 backdrop-blur-md flex items-center justify-center p-2 sm:p-4">
@@ -298,11 +367,6 @@ export default function AdminDashboard({ onClose, config = weddingConfig, onRefr
                               <span className="px-2 py-0.5 text-xs font-semibold rounded-full bg-stone-100 text-stone-600">
                                 {g.group}
                               </span>
-                              {g.table && (
-                                <span className="px-2 py-0.5 text-xs font-semibold rounded-full bg-amber-100 text-amber-800">
-                                  {g.table}
-                                </span>
-                              )}
                             </div>
                             {g.message && (
                               <p className="text-xs text-stone-500 italic mt-0.5 line-clamp-1">
@@ -548,7 +612,7 @@ export default function AdminDashboard({ onClose, config = weddingConfig, onRefr
                   <div>
                     <strong>Tab 1: "KhachMoi" (Danh sách khách mời):</strong>
                     <code className="block mt-1 p-2 bg-white rounded border border-amber-200 text-xs font-mono text-stone-800">
-                      id, xung_ho, ho_ten, nhom, ban, loi_nhan, sdt, trang_thai
+                      id, xung_ho, ho_ten, nhom, loi_nhan, sdt, trang_thai
                     </code>
                   </div>
                   <div>

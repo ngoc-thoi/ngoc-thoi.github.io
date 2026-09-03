@@ -1,5 +1,4 @@
-import React from 'react';
-import { Calendar, MapPin, Heart, ChevronDown, Utensils } from 'lucide-react';
+import { Calendar, MapPin, Heart, ChevronDown } from 'lucide-react';
 import SongHyIcon from './SongHyIcon';
 import { weddingConfig } from '../config/weddingConfig';
 
@@ -62,20 +61,14 @@ export default function Hero({ guest, config = weddingConfig }) {
           </p>
         )}
 
-        {/* Guest Group or Table Tag */}
-        <div className="flex flex-wrap items-center justify-center gap-2 mt-4 pt-3 border-t border-amber-400/20 text-xs sm:text-sm text-amber-200/90">
-          {guest.table && (
-            <span className="flex items-center gap-1 px-3 py-1 rounded-full bg-amber-500/20 border border-amber-400/30 font-semibold">
-              <Utensils className="w-3.5 h-3.5 text-amber-300" />
-              {guest.table}
-            </span>
-          )}
-          {guest.group && (
+        {/* Guest Group Tag */}
+        {guest.group && (
+          <div className="flex flex-wrap items-center justify-center gap-2 mt-4 pt-3 border-t border-amber-400/20 text-xs sm:text-sm text-amber-200/90">
             <span className="px-3 py-1 rounded-full bg-white/10 text-stone-200">
               {guest.group}
             </span>
-          )}
-        </div>
+          </div>
+        )}
 
         <p className="mt-4 text-xs sm:text-sm text-stone-300">
           Đến tham dự buổi tiệc chung vui cùng gia đình chúng mình vào:

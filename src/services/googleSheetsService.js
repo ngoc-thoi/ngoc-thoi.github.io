@@ -316,13 +316,13 @@ export const GOOGLE_APPS_SCRIPT_CODE = `function doPost(e) {
   }
 }`;
 
-// Format template for Tab 1: KhachMoi
-export const GOOGLE_SHEET_TEMPLATE_CSV = `id,xung_ho,ho_ten,nhom,ban,loi_nhan,sdt,trang_thai
-duc-nv,Bạn,Nguyễn Văn Đức,Bạn Cấp 3,Bàn 06,Rất vui vì cậu đã luôn đồng hành cùng chúng mình!,0901234567,Chưa gửi
-lan-anh,Chị,Trần Lan Anh,Đồng Nghiệp,Bàn 12,Cảm ơn chị luôn chỉ dẫn em suốt thời gian qua.,0912345678,Chưa gửi
-tuan-anh,Anh,Vũ Tuấn Anh,Bạn Chú Rể,Bàn 05,Hôm đó nhớ đến sớm cụng ly cùng anh em nhé!,0987654321,Chưa gửi
-gia-dinh-bac-hung,Gia đình,Bác Hùng & Bác Hương,Họ Hàng,Bàn VIP 02,Kính mời hai Bác cùng gia đình đến chung vui.,0933221100,Chưa gửi
-phuong-thao,Em,Đỗ Phương Thảo,Bạn Cô Dâu,Bàn 08,Nhớ đến sớm chụp ảnh kỷ niệm thật nhiều nha!,0944556677,Chưa gửi`;
+// Format template for Tab 1: KhachMoi (No table column needed)
+export const GOOGLE_SHEET_TEMPLATE_CSV = `id,xung_ho,ho_ten,nhom,loi_nhan,sdt,trang_thai
+duc-nv,Bạn,Nguyễn Văn Đức,Bạn Cấp 3,Rất vui vì cậu đã luôn đồng hành cùng chúng mình!,0901234567,Chưa gửi
+lan-anh,Chị,Trần Lan Anh,Đồng Nghiệp,Cảm ơn chị luôn chỉ dẫn em suốt thời gian qua.,0912345678,Chưa gửi
+tuan-anh,Anh,Vũ Tuấn Anh,Bạn Chú Rể,Hôm đó nhớ đến sớm cụng ly cùng anh em nhé!,0987654321,Chưa gửi
+gia-dinh-bac-hung,Gia đình,Bác Hùng & Bác Hương,Họ Hàng,Kính mời hai Bác cùng gia đình đến chung vui.,0933221100,Chưa gửi
+phuong-thao,Em,Đỗ Phương Thảo,Bạn Cô Dâu,Nhớ đến sớm chụp ảnh kỷ niệm thật nhiều nha!,0944556677,Chưa gửi`;
 
 // Format template for Tab 2: ThongTin (Single Source of Truth for all wedding info)
 export const GOOGLE_SHEET_CONFIG_TEMPLATE_CSV = `key,gia_tri,mo_ta
