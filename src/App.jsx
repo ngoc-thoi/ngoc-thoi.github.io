@@ -4,8 +4,6 @@ import Countdown from './components/Countdown';
 import CoupleStory from './components/CoupleStory';
 import EventsAndMap from './components/EventsAndMap';
 import PhotoGallery from './components/PhotoGallery';
-import GiftBox from './components/GiftBox';
-import RSVP from './components/RSVP';
 import AudioPlayer from './components/AudioPlayer';
 import PetalEffects from './components/PetalEffects';
 import Footer from './components/Footer';
@@ -50,8 +48,6 @@ export default function App() {
       <CoupleStory />
       <EventsAndMap />
       <PhotoGallery />
-      <GiftBox />
-      <RSVP guest={guest} />
       <Footer onOpenAdmin={() => setShowAdmin(true)} />
 
       {/* Secret / Built-in Admin Manager Modal */}

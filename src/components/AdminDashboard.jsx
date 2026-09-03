@@ -11,7 +11,6 @@ import {
   Clock, 
   X,
   Users,
-  MessageSquareHeart,
   Share2
 } from 'lucide-react';
 import { 
@@ -37,8 +36,7 @@ export default function AdminDashboard({ onClose, onReloadData }) {
       return {};
     }
   });
-  const [rsvps, setRsvps] = useState([]);
-  const [activeTab, setActiveTab] = useState('guests'); // 'guests', 'sheets', 'rsvps'
+  const [activeTab, setActiveTab] = useState('guests'); // 'guests', 'sheets'
 
   // Extract ID from full Google Sheet URL if user pastes URL
   const extractSheetId = (input) => {
@@ -70,12 +68,6 @@ export default function AdminDashboard({ onClose, onReloadData }) {
 
   useEffect(() => {
     loadGuests(sheetInput);
-    try {
-      const savedRsvps = JSON.parse(localStorage.getItem('wedding_rsvp_responses') || '[]');
-      setRsvps(savedRsvps);
-    } catch {
-      setRsvps([]);
-    }
   }, []);
 
   const toggleSent = (guestId) => {
@@ -166,18 +158,6 @@ export default function AdminDashboard({ onClose, onReloadData }) {
           >
             <FileSpreadsheet className="w-4 h-4" />
             <span>Cài Đặt Google Sheet</span>
-          </button>
-
-          <button
-            onClick={() => setActiveTab('rsvps')}
-            className={`px-4 py-2 text-sm font-semibold border-b-2 flex items-center gap-2 transition-colors ${
-              activeTab === 'rsvps'
-                ? 'border-wedding-red text-wedding-red'
-                : 'border-transparent text-stone-500 hover:text-stone-800'
-            }`}
-          >
-            <MessageSquareHeart className="w-4 h-4" />
-            <span>Phản Hồi RSVP ({rsvps.length})</span>
           </button>
         </div>
 
@@ -394,41 +374,6 @@ export default function AdminDashboard({ onClose, onReloadData }) {
                   </li>
                 </ol>
               </div>
-            </div>
-          )}
-
-          {/* TAB 3: RSVPS */}
-          {activeTab === 'rsvps' && (
-            <div className="space-y-4">
-              <h3 className="font-bold text-base text-stone-800">
-                Khách Đã Điền Phản Hồi Trực Tuyến
-              </h3>
-              {rsvps.length === 0 ? (
-                <div className="text-center py-12 text-stone-500 text-sm bg-white rounded-2xl border border-stone-200">
-                  Chưa có khách nào gửi phản hồi RSVP.
-                </div>
-              ) : (
-                <div className="space-y-3">
-                  {rsvps.map((res, i) => (
-                    <div key={i} className="p-4 bg-white rounded-xl border border-stone-200 shadow-sm flex flex-col gap-1">
-                      <div className="flex items-center justify-between">
-                        <span className="font-bold text-stone-900">{res.name}</span>
-                        <span className={`px-2 py-0.5 rounded-full text-xs font-semibold ${
-                          res.status === 'attending' ? 'bg-emerald-100 text-emerald-800' : 'bg-stone-100 text-stone-600'
-                        }`}>
-                          {res.status === 'attending' ? `Tham gia (${res.count} người)` : 'Không tham gia'}
-                        </span>
-                      </div>
-                      {res.wish && (
-                        <p className="text-sm text-stone-600 italic">"{res.wish}"</p>
-                      )}
-                      <span className="text-[10px] text-stone-400">
-                        {new Date(res.timestamp).toLocaleString('vi-VN')}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              )}
             </div>
           )}
         </div>
