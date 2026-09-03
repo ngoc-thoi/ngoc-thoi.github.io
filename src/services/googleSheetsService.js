@@ -74,10 +74,10 @@ export function parseCSV(csvText) {
   return data;
 }
 
-// Parse Key-Value Config CSV from Tab 'ThongTin'
+// Parse Key-Value Config CSV from Tab 'mau_thong_tin_dam_cuoi' or 'ThongTin'
 export function parseConfigCSV(csvText) {
   const lines = csvText.split(/\r\n|\n/).filter(line => line.trim() !== '');
-  if (lines.length < 2) return null;
+  if (lines.length === 0) return null;
 
   const parseRow = (rowStr) => {
     const result = [];
@@ -103,32 +103,44 @@ export function parseConfigCSV(csvText) {
     return result;
   };
 
-  const headers = parseRow(lines[0]).map(h => h.toLowerCase().replace(/[^a-z0-9]/g, ''));
-  // Verify this is a key-value config sheet (should have 'key' header)
-  if (!headers.includes('key')) {
-    return null;
-  }
-
-  const keyIdx = headers.indexOf('key');
-  const valIdx = headers.findIndex(h => h === 'giatri' || h === 'value' || h === 'val');
-  if (valIdx === -1) return null;
-
   const map = {};
-  for (let i = 1; i < lines.length; i++) {
-    const values = parseRow(lines[i]);
-    if (values.length > 1 && values[keyIdx]) {
-      const k = values[keyIdx].trim().toLowerCase();
-      const v = values[valIdx] !== undefined ? values[valIdx].trim() : '';
-      if (k) map[k] = v;
+
+  for (const line of lines) {
+    const row = parseRow(line);
+    // Trim empty trailing columns
+    while (row.length > 0 && !row[row.length - 1]) {
+      row.pop();
+    }
+    if (row.length < 2) continue;
+
+    const k = row[0].trim().toLowerCase();
+    if (k === 'key' || !k) continue;
+
+    let val = '';
+    if (row.length === 2 || row.length === 3) {
+      val = row[1].trim();
+    } else {
+      // Rejoin all middle values split by comma (excluding the last column which is description 'mo_ta')
+      val = row.slice(1, -1).map(p => p.trim()).filter(Boolean).join(', ');
+    }
+
+    if (k && val) {
+      map[k] = val;
     }
   }
 
-  return map;
+  return Object.keys(map).length > 0 ? map : null;
 }
 
 // Deep merge remote config map into fallback weddingConfig
 export function mergeConfig(remoteMap) {
   if (!remoteMap) return fallbackConfig;
+
+  // Normalize date format if user provided '2026-10-25 11:00:00' to ISO '2026-10-25T11:00:00'
+  let rawDate = remoteMap['ngay_cuoi_iso'] || fallbackConfig.weddingDate;
+  if (rawDate && rawDate.includes(' ') && !rawDate.includes('T')) {
+    rawDate = rawDate.replace(' ', 'T');
+  }
 
   return {
     groom: {
@@ -149,7 +161,7 @@ export function mergeConfig(remoteMap) {
       address: remoteMap['co_dau_dia_chi'] || fallbackConfig.bride.address,
       avatar: remoteMap['co_dau_anh'] || fallbackConfig.bride.avatar,
     },
-    weddingDate: remoteMap['ngay_cuoi_iso'] || fallbackConfig.weddingDate,
+    weddingDate: rawDate,
     displayDate: remoteMap['ngay_cuoi_hien_thi'] || fallbackConfig.displayDate,
     lunarDate: remoteMap['ngay_cuoi_am_lich'] || fallbackConfig.lunarDate,
     restaurant: {
@@ -179,11 +191,11 @@ export async function fetchWeddingConfigFromGoogleSheet(sheetIdOrUrl) {
   const sheetId = cleanSheetId(sheetIdOrUrl);
   if (!sheetId) return fallbackConfig;
 
-  // Try candidate tab names for wedding config
-  const candidateTabs = ['ThongTin', 'thongtin', 'Thông tin', 'Config', 'config', 'Sheet2'];
+  // Candidate tabs for wedding metadata (mau_thong_tin_dam_cuoi prioritized)
+  const candidateTabs = ['mau_thong_tin_dam_cuoi', 'ThongTin', 'thongtin', 'Thông tin', 'Config', 'config', 'Sheet2'];
 
   for (const tab of candidateTabs) {
-    const url = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(tab)}&_t=${Date.now()}`;
+    const url = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&headers=0&sheet=${encodeURIComponent(tab)}&_t=${Date.now()}`;
     try {
       const res = await fetch(url, { cache: 'no-cache' });
       if (res.ok) {
@@ -216,7 +228,7 @@ export async function fetchGuestsFromGoogleSheet(sheetIdOrUrl, sheetName = 'Khac
   if (!sheetId) return defaultGuests;
 
   const tryFetchSheet = async (name) => {
-    const url = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(name)}&_t=${Date.now()}`;
+    const url = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&headers=0&sheet=${encodeURIComponent(name)}&_t=${Date.now()}`;
     try {
       const response = await fetch(url, { cache: 'no-cache' });
       if (!response.ok) return null;
@@ -227,25 +239,22 @@ export async function fetchGuestsFromGoogleSheet(sheetIdOrUrl, sheetName = 'Khac
     }
   };
 
-  try {
-    let guests = await tryFetchSheet(sheetName);
-    if (!guests || guests.length === 0) {
-      guests = await tryFetchSheet('Sheet1');
-    }
-    if (!guests || guests.length === 0) {
-      guests = await tryFetchSheet('Trang tính 1');
-    }
+  const candidateTabs = [sheetName, 'mau_danh_sach_khach_moi', 'KhachMoi', 'khachmoi', 'Khách mời', 'Sheet1', 'Trang tính 1'];
 
-    if (guests && guests.length > 0) {
-      try {
-        localStorage.setItem(GUESTS_CACHE_KEY, JSON.stringify(guests));
-      } catch (e) {
-        console.warn('Could not save guests to localStorage:', e);
+  for (const tab of candidateTabs) {
+    try {
+      const guests = await tryFetchSheet(tab);
+      if (guests && guests.length > 0) {
+        try {
+          localStorage.setItem(GUESTS_CACHE_KEY, JSON.stringify(guests));
+        } catch (e) {
+          console.warn('Could not save guests to localStorage:', e);
+        }
+        return guests;
       }
-      return guests;
+    } catch (err) {
+      console.warn(`Failed fetching tab ${tab}:`, err);
     }
-  } catch (error) {
-    console.warn('Failed to fetch from Google Sheet, checking cache:', error);
   }
 
   // If network error, use cached guests
@@ -285,7 +294,7 @@ export const GOOGLE_APPS_SCRIPT_CODE = `function doPost(e) {
   try {
     var data = JSON.parse(e.postData.contents);
     var ss = SpreadsheetApp.getActiveSpreadsheet();
-    var sheet = ss.getSheetByName("KhachMoi") || ss.getSheetByName("Sheet1") || ss.getSheets()[0];
+    var sheet = ss.getSheetByName("mau_danh_sach_khach_moi") || ss.getSheetByName("KhachMoi") || ss.getSheetByName("Sheet1") || ss.getSheets()[0];
     var rows = sheet.getDataRange().getValues();
     
     var colIdx = 7;
@@ -327,10 +336,10 @@ phuong-thao,Em,Đỗ Phương Thảo,Bạn Cô Dâu,Nhớ đến sớm chụp �
 // Format template for Tab 2: ThongTin (Single Source of Truth for all wedding info)
 export const GOOGLE_SHEET_CONFIG_TEMPLATE_CSV = `key,gia_tri,mo_ta
 chu_re_ten_ngan,Ngọc,Tên thân mật chú rể
-chu_re_ho_ten,Vũ Đình Ngọc,Họ tên đầy đủ chú rể
-chu_re_bo,Vũ Văn Minh,Thân phụ chú rể
+chu_re_ho_ten,Nguyễn Ngọc Thời,Họ tên đầy đủ chú rể
+chu_re_bo,Hồng Khánh,Thân phụ chú rể
 chu_re_me,Trần Thị Mai,Thân mẫu chú rể
-chu_re_dia_chi,Hoàn Kiếm, Hà Nội,Địa chỉ gia đình nhà trai
+chu_re_dia_chi,Sài gòn, Hà Nội,Địa chỉ gia đình nhà trai
 chu_re_anh,https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600&auto=format&fit=crop&q=80,Link ảnh chú rể
 co_dau_ten_ngan,Thơi,Tên thân mật cô dâu
 co_dau_ho_ten,Nguyễn Thị Thơi,Họ tên đầy đủ cô dâu
@@ -347,5 +356,5 @@ nha_hang_dia_chi,72 Quán Sứ, Trần Hưng Đạo, Hoàn Kiếm, Hà Nội,Đ�
 nha_hang_gio,11:00,Giờ đón khách khai tiệc
 google_map_chi_duong,https://www.google.com/maps/dir/?api=1&destination=Tr%E1%BB%91ng+%C4%90%E1%BB%93ng+Palace+72+Qu%C3%A1n+S%E1%BB%A9+H%C3%A0+N%E1%BB%99i,Link chỉ đường Google Maps
 google_map_embed,https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3724.2387146599723!2d105.84277027587399!3d21.023133387970726!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3135ab96b613d9bb%3A0x63351d8b1aa7066f!2zVHLhu5FuZyDEkOG7k25nIFBhbGFjZSBRdcOhbiBT4bup!5e0!3m2!1svi!2s!4v1709470000000!5m2!1svi!2s,Link nhúng bản đồ iframe
-nhac_youtube_url,https://www.youtube.com/watch?v=3UyotSd-Cp4,Link YouTube bài hát cưới phát nền
+nhac_youtube_url,https://www.youtube.com/watch?v=SpIErVx5c0A&list=RD3UyotSd-Cp4&index=6,Link YouTube bài hát cưới phát nền
 nhac_tieu_de,Ánh Nắng Của Anh - Đức Phúc,Tên bài hát hiển thị`;
