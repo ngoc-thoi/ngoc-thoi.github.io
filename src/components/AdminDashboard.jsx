@@ -231,6 +231,8 @@ export default function AdminDashboard({ onClose, config = weddingConfig, onRefr
     );
   }
 
+  const sentCount = Object.values(sentMap).filter(Boolean).length;
+
   return (
     <div className="fixed inset-0 z-50 bg-stone-900/80 backdrop-blur-md flex items-center justify-center p-2 sm:p-4">
       <div className="bg-white w-full max-w-5xl h-[92vh] rounded-2xl shadow-2xl flex flex-col overflow-hidden border border-amber-300/40">
