@@ -110,8 +110,8 @@ export const weddingConfig = {
 
   // Google Sheets Config
   googleSheets: {
-    // Paste your published Google Sheet ID here or configure in #admin view
-    sheetId: "",
+    // Connected to user's Google Sheet
+    sheetId: "1ZMD3XsVahAng0uJNZ6y5Rluof72DSoYGtni7_u_lqqU",
     sheetName: "Sheet1"
   }
 };
