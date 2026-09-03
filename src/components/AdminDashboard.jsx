@@ -16,18 +16,20 @@ import {
 } from 'lucide-react';
 import { 
   fetchGuestsFromGoogleSheet, 
+  fetchWeddingConfigFromGoogleSheet,
   updateGuestStatusInGoogleSheet,
   GOOGLE_APPS_SCRIPT_CODE,
-  GOOGLE_SHEET_TEMPLATE_CSV 
+  GOOGLE_SHEET_TEMPLATE_CSV,
+  GOOGLE_SHEET_CONFIG_TEMPLATE_CSV 
 } from '../services/googleSheetsService';
 import { weddingConfig } from '../config/weddingConfig';
 
-export default function AdminDashboard({ onClose }) {
+export default function AdminDashboard({ onClose, config = weddingConfig, onRefreshData }) {
   const [sheetInput, setSheetInput] = useState(() => {
     return localStorage.getItem('wedding_sheet_id') || weddingConfig.googleSheets.sheetId || '';
   });
   const [ytInput, setYtInput] = useState(() => {
-    return localStorage.getItem('wedding_youtube_url') || weddingConfig.music.youtubeUrl || '';
+    return localStorage.getItem('wedding_youtube_url') || config.music.youtubeUrl || '';
   });
   const [ytSaved, setYtSaved] = useState(false);
   const [scriptInput, setScriptInput] = useState(() => {
@@ -63,7 +65,10 @@ export default function AdminDashboard({ onClose }) {
     setStatusMsg('');
     const id = extractSheetId(idToUse);
     try {
-      const data = await fetchGuestsFromGoogleSheet(id, 'Sheet1', forceRefresh);
+      if (id) {
+        localStorage.setItem('wedding_sheet_id', id);
+      }
+      const data = await fetchGuestsFromGoogleSheet(id, 'KhachMoi', forceRefresh);
       setGuests(data);
 
       // Merge remote status from Google Sheet into local sentMap
@@ -77,11 +82,11 @@ export default function AdminDashboard({ onClose }) {
       localStorage.setItem('wedding_sent_checklist', JSON.stringify(updatedSentMap));
 
       if (id) {
-        localStorage.setItem('wedding_sheet_id', id);
-        setStatusMsg(`Đã kết nối thành công! Đã tải ${data.length} khách mời.`);
+        setStatusMsg(`Đã kết nối thành công! Đã tải ${data.length} khách mời & thông tin đám cưới.`);
       } else {
         setStatusMsg(`Đang sử dụng danh sách khách mời mặc định (${data.length} khách).`);
       }
+      if (onRefreshData) onRefreshData();
     } catch (err) {
       setStatusMsg('Lỗi khi tải dữ liệu từ Google Sheet: ' + err.message);
     } finally {
@@ -115,7 +120,7 @@ export default function AdminDashboard({ onClose }) {
   const copyInviteMessage = (guest) => {
     const baseUrl = window.location.origin + window.location.pathname;
     const inviteUrl = `${baseUrl}?g=${encodeURIComponent(guest.id)}`;
-    const msg = `Thân gửi ${guest.prefix} ${guest.name},\n\nGia đình chúng mình chuẩn bị tổ chức lễ cưới vào ngày ${weddingConfig.displayDate}.\nRất mong ${guest.prefix} sẽ đến chung vui cùng chúng mình trong ngày trọng đại này!\n\nThiệp mời trực tuyến riêng của ${guest.prefix} ở đây nhé:\n${inviteUrl}\n\nRất hân hạnh được đón tiếp ${guest.prefix}!`;
+    const msg = `Thân gửi ${guest.prefix} ${guest.name},\n\nGia đình chúng mình chuẩn bị tổ chức lễ cưới vào ngày ${config.displayDate}.\nRất mong ${guest.prefix} sẽ đến chung vui cùng chúng mình trong ngày trọng đại này!\n\nThiệp mời trực tuyến riêng của ${guest.prefix} ở đây nhé:\n${inviteUrl}\n\nRất hân hạnh được đón tiếp ${guest.prefix}!`;
 
     navigator.clipboard.writeText(msg);
     setCopiedId(guest.id);
@@ -128,6 +133,17 @@ export default function AdminDashboard({ onClose }) {
     const link = document.createElement('a');
     link.href = url;
     link.setAttribute('download', 'mau_danh_sach_khach_moi.csv');
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  const downloadConfigTemplateCSV = () => {
+    const blob = new Blob([GOOGLE_SHEET_CONFIG_TEMPLATE_CSV], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', 'mau_thong_tin_dam_cuoi_ThongTin.csv');
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -344,22 +360,33 @@ export default function AdminDashboard({ onClose }) {
           {activeTab === 'sheets' && (
             <div className="max-w-2xl mx-auto space-y-6">
               <div className="bg-white p-6 rounded-2xl border border-stone-200 shadow-sm space-y-4">
-                <div className="flex items-center justify-between">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                   <h3 className="font-bold text-lg text-stone-800 flex items-center gap-2">
                     <FileSpreadsheet className="w-5 h-5 text-emerald-600" />
-                    <span>Liên Kết Google Sheet Trực Tiếp</span>
+                    <span>Google Sheet - Nguồn Dữ Liệu Duy Nhất</span>
                   </h3>
-                  <button
-                    onClick={downloadTemplateCSV}
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-xs font-semibold border border-emerald-200"
-                  >
-                    <Download className="w-3.5 h-3.5" />
-                    <span>Tải File Mẫu (CSV)</span>
-                  </button>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <button
+                      onClick={downloadTemplateCSV}
+                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-xs font-semibold border border-emerald-200"
+                      title="Tải mẫu danh sách khách mời (Tab 1: KhachMoi)"
+                    >
+                      <Download className="w-3.5 h-3.5" />
+                      <span>Mẫu Khách Mời</span>
+                    </button>
+                    <button
+                      onClick={downloadConfigTemplateCSV}
+                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-800 text-xs font-semibold border border-amber-200"
+                      title="Tải mẫu thông tin cô dâu, chú rể, bố mẹ, nhà hàng (Tab 2: ThongTin)"
+                    >
+                      <Download className="w-3.5 h-3.5" />
+                      <span>Mẫu Thông Tin</span>
+                    </button>
+                  </div>
                 </div>
 
                 <p className="text-sm text-stone-600">
-                  Dán đường dẫn (URL) hoặc ID của bảng tính Google Sheet của bạn vào bên dưới. Trang web sẽ tự động đọc trực tiếp danh sách bạn bè mà không cần cài đặt máy chủ!
+                  Google Sheet của bạn là <b>Single Source of Truth</b> duy nhất. Toàn bộ tên cô dâu chú rể, bố mẹ hai bên, địa chỉ, nhà hàng, link Google Maps và danh sách khách mời đều được đọc tự động từ Google Sheet!
                 </p>
 
                 <div className="space-y-2">
@@ -370,27 +397,58 @@ export default function AdminDashboard({ onClose }) {
                     type="text"
                     value={sheetInput}
                     onChange={(e) => setSheetInput(e.target.value)}
-                    placeholder="https://docs.google.com/spreadsheets/d/1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms/edit"
-                    className="w-full px-4 py-2.5 rounded-xl border border-stone-300 text-sm focus:border-wedding-red focus:outline-none"
+                    placeholder="https://docs.google.com/spreadsheets/d/1ZMD3XsVahAng0uJNZ6y5Rluof72DSoYGtni7_u_lqqU/edit"
+                    className="w-full px-4 py-2.5 rounded-xl border border-stone-300 text-sm focus:border-wedding-red focus:outline-none font-mono"
                   />
                 </div>
 
                 <button
-                  onClick={() => loadGuests(sheetInput)}
+                  onClick={() => loadGuests(sheetInput, true)}
                   disabled={loading}
-                  className="w-full py-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-semibold text-sm transition-colors flex items-center justify-center gap-2"
+                  className="w-full py-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-semibold text-sm transition-colors flex items-center justify-center gap-2 shadow-sm"
                 >
                   <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
-                  <span>Lưu &amp; Đồng Bộ Danh Sách Khách</span>
+                  <span>Lưu &amp; Đồng Bộ Toàn Bộ Dữ Liệu</span>
                 </button>
 
                 {statusMsg && (
                   <div className={`p-3 rounded-xl text-xs font-medium ${
-                    statusMsg.includes('Lỗi') ? 'bg-rose-50 text-rose-700' : 'bg-emerald-50 text-emerald-700'
+                    statusMsg.includes('Lỗi') ? 'bg-rose-50 text-rose-700 border border-rose-200' : 'bg-emerald-50 text-emerald-700 border border-emerald-200'
                   }`}>
                     {statusMsg}
                   </div>
                 )}
+              </div>
+
+              {/* Live Info Preview from Google Sheet */}
+              <div className="bg-white p-6 rounded-2xl border border-stone-200 shadow-sm space-y-3">
+                <h4 className="font-bold text-base text-stone-800 flex items-center gap-2">
+                  <span>💎 Thông Tin Đang Hiển Thị (Single Source of Truth)</span>
+                </h4>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                  <div className="p-3 bg-stone-50 rounded-xl border border-stone-200 space-y-1">
+                    <p className="font-bold text-wedding-red text-sm">🎩 Nhà Trai (Chú Rể)</p>
+                    <p><b>Họ tên:</b> {config.groom.fullName} ({config.groom.shortName})</p>
+                    <p><b>Thân phụ:</b> {config.groom.father}</p>
+                    <p><b>Thân mẫu:</b> {config.groom.mother}</p>
+                    <p><b>Địa chỉ:</b> {config.groom.address}</p>
+                  </div>
+
+                  <div className="p-3 bg-stone-50 rounded-xl border border-stone-200 space-y-1">
+                    <p className="font-bold text-wedding-red text-sm">👰 Nhà Gái (Cô Dâu)</p>
+                    <p><b>Họ tên:</b> {config.bride.fullName} ({config.bride.shortName})</p>
+                    <p><b>Thân phụ:</b> {config.bride.father}</p>
+                    <p><b>Thân mẫu:</b> {config.bride.mother}</p>
+                    <p><b>Địa chỉ:</b> {config.bride.address}</p>
+                  </div>
+                </div>
+
+                <div className="p-3 bg-amber-50/50 rounded-xl border border-amber-200 text-xs space-y-1">
+                  <p className="font-bold text-amber-900">🏰 Địa Điểm &amp; Thời Gian</p>
+                  <p><b>Nhà hàng:</b> {config.restaurant.name} - {config.restaurant.hall}</p>
+                  <p><b>Địa chỉ:</b> {config.restaurant.address}</p>
+                  <p><b>Ngày tổ chức:</b> {config.displayDate} ({config.lunarDate})</p>
+                </div>
               </div>
 
               {/* YouTube Background Music Configuration */}
@@ -484,26 +542,26 @@ export default function AdminDashboard({ onClose }) {
               {/* Step by step guide */}
               <div className="bg-amber-50/60 p-6 rounded-2xl border border-amber-200 space-y-3">
                 <h4 className="font-bold text-amber-900 text-sm">
-                  📌 Hướng Dẫn Định Dạng &amp; Xuất Bản Google Sheet (3 bước đơn giản):
+                  📌 Cấu Trúc Google Sheet Chuẩn (2 Tab - Single Source of Truth):
                 </h4>
-                <ol className="list-decimal list-inside text-xs sm:text-sm text-amber-950 space-y-2">
-                  <li>
-                    <strong>Tạo các cột tiêu đề ở dòng 1:</strong>
+                <div className="text-xs sm:text-sm text-amber-950 space-y-2">
+                  <div>
+                    <strong>Tab 1: "KhachMoi" (Danh sách khách mời):</strong>
                     <code className="block mt-1 p-2 bg-white rounded border border-amber-200 text-xs font-mono text-stone-800">
-                      id, xung_ho, ho_ten, nhom, ban, loi_nhan, sdt
+                      id, xung_ho, ho_ten, nhom, ban, loi_nhan, sdt, trang_thai
                     </code>
-                  </li>
-                  <li>
-                    <strong>Ví dụ nội dung ở dòng 2:</strong>
+                  </div>
+                  <div>
+                    <strong>Tab 2: "ThongTin" (Thông tin cô dâu, chú rể, bố mẹ, nhà hàng):</strong>
+                    <p className="text-xs text-stone-600 mt-0.5">Bấm nút <b>"Mẫu Thông Tin"</b> ở trên để tải file mẫu định dạng Key-Value chuẩn về import vào Google Sheet!</p>
                     <code className="block mt-1 p-2 bg-white rounded border border-amber-200 text-xs font-mono text-stone-800">
-                      duc-nv, Bạn, Nguyễn Văn Đức, Bạn Cấp 3, Bàn 06, Rất mong bạn đến chung vui!, 0901234567
+                      key, gia_tri, mo_ta
                     </code>
-                  </li>
-                  <li>
-                    <strong>Bật quyền xem công khai:</strong>
-                    Trên Google Sheet, ấn nút <strong>"Chia sẻ" (Share)</strong> góc trên bên phải &gt; chọn <strong>"Bất kỳ ai có đường liên kết đều có thể xem" (Anyone with link can view)</strong>. Dán link vào ô bên trên và bấm <em>Lưu &amp; Đồng bộ</em>!
-                  </li>
-                </ol>
+                  </div>
+                  <div className="pt-2 border-t border-amber-200 text-xs">
+                    <b>Lưu ý chia sẻ:</b> Trên Google Sheet, ấn nút <b>"Chia sẻ" (Share)</b> ➔ chọn <b>"Bất kỳ ai có đường liên kết đều có thể xem" (Anyone with link can view)</b> để trang web đọc dữ liệu tự động.
+                  </div>
+                </div>
               </div>
             </div>
           )}

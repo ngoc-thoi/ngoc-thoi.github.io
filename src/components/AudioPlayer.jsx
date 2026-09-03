@@ -3,14 +3,14 @@ import { Volume2, VolumeX, Music, Disc } from 'lucide-react';
 import { weddingConfig } from '../config/weddingConfig';
 import { extractYouTubeId } from '../utils/youtube';
 
-export default function AudioPlayer() {
+export default function AudioPlayer({ config = weddingConfig }) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isReady, setIsReady] = useState(false);
   const [hasInteracted, setHasInteracted] = useState(false);
   const playerRef = useRef(null);
 
-  // Get YouTube URL from localStorage (customized in #admin) or weddingConfig
-  const youtubeUrl = localStorage.getItem('wedding_youtube_url') || weddingConfig.music.youtubeUrl;
+  // Get YouTube URL from localStorage (customized in #admin) or dynamic config
+  const youtubeUrl = localStorage.getItem('wedding_youtube_url') || config.music.youtubeUrl;
   const videoId = extractYouTubeId(youtubeUrl);
 
   useEffect(() => {
@@ -156,7 +156,7 @@ export default function AudioPlayer() {
         }`}
       >
         {isPlaying ? (
-          <span className="truncate max-w-[140px] sm:max-w-[200px]">{weddingConfig.music.title}</span>
+          <span className="truncate max-w-[140px] sm:max-w-[200px]">{config.music.title}</span>
         ) : (
           <span className="flex items-center gap-1 font-semibold">
             <Music className="w-3.5 h-3.5 text-amber-300" />

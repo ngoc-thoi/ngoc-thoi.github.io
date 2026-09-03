@@ -11,7 +11,7 @@ import AdminDashboard from './components/AdminDashboard';
 import { useGuest } from './hooks/useGuest';
 
 export default function App() {
-  const { guest, allGuests, loading } = useGuest();
+  const { guest, allGuests, config, loading, refreshAll } = useGuest();
   const [showAdmin, setShowAdmin] = useState(false);
 
   // Check if user visited with #admin in URL
@@ -37,23 +37,25 @@ export default function App() {
   return (
     <div className="min-h-screen bg-[#FFFDF9] text-stone-800 font-sans relative selection:bg-wedding-red-800 selection:text-amber-200">
       {/* Background Wedding Music Player */}
-      <AudioPlayer />
+      <AudioPlayer config={config} />
 
       {/* Falling Flower Confetti / Petals */}
       <PetalEffects />
 
       {/* Main Wedding Invitation Sections */}
-      <Hero guest={guest} />
-      <Countdown />
-      <CoupleStory />
-      <EventsAndMap />
+      <Hero guest={guest} config={config} />
+      <Countdown config={config} />
+      <CoupleStory config={config} />
+      <EventsAndMap config={config} />
       <PhotoGallery />
-      <Footer onOpenAdmin={() => setShowAdmin(true)} />
+      <Footer onOpenAdmin={() => setShowAdmin(true)} config={config} />
 
       {/* Secret / Built-in Admin Manager Modal */}
       {showAdmin && (
         <AdminDashboard
           onClose={closeAdmin}
+          config={config}
+          onRefreshData={refreshAll}
         />
       )}
     </div>

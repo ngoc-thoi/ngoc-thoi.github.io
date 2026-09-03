@@ -1,0 +1,24 @@
+key,gia_tri,mo_ta
+chu_re_ten_ngan,Ngọc,Tên thân mật chú rể
+chu_re_ho_ten,Vũ Đình Ngọc,Họ tên đầy đủ chú rể
+chu_re_bo,Vũ Văn Minh,Thân phụ chú rể
+chu_re_me,Trần Thị Mai,Thân mẫu chú rể
+chu_re_dia_chi,Hoàn Kiếm, Hà Nội,Địa chỉ gia đình nhà trai
+chu_re_anh,https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600&auto=format&fit=crop&q=80,Link ảnh chú rể
+co_dau_ten_ngan,Thơi,Tên thân mật cô dâu
+co_dau_ho_ten,Nguyễn Thị Thơi,Họ tên đầy đủ cô dâu
+co_dau_bo,Nguyễn Văn Dũng,Thân phụ cô dâu
+co_dau_me,Lê Thị Thảo,Thân mẫu cô dâu
+co_dau_dia_chi,Cầu Giấy, Hà Nội,Địa chỉ gia đình nhà gái
+co_dau_anh,https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=600&auto=format&fit=crop&q=80,Link ảnh cô dâu
+ngay_cuoi_iso,2026-10-25T11:00:00,Thời gian cho đồng hồ đếm ngược (YYYY-MM-DDTHH:mm:ss)
+ngay_cuoi_hien_thi,Chủ Nhật, ngày 25 tháng 10 năm 2026,Ngày cưới hiển thị trang trọng
+ngay_cuoi_am_lich,Tức ngày 15 tháng 09 năm Bính Ngọ (Âm Lịch),Ngày âm lịch
+nha_hang_ten,Trung Tâm Hội Nghị & Tiệc Cưới Trống Đồng Palace,Tên nhà hàng tổ chức tiệc
+nha_hang_sanh,Sảnh Hoàng Gia (Tầng 2),Sảnh tiệc
+nha_hang_dia_chi,72 Quán Sứ, Trần Hưng Đạo, Hoàn Kiếm, Hà Nội,Địa chỉ nhà hàng
+nha_hang_gio,11:00,Giờ đón khách khai tiệc
+google_map_chi_duong,https://www.google.com/maps/dir/?api=1&destination=Tr%E1%BB%91ng+%C4%90%E1%BB%93ng+Palace+72+Qu%C3%A1n+S%E1%BB%A9+H%C3%A0+N%E1%BB%99i,Link chỉ đường Google Maps
+google_map_embed,https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3724.2387146599723!2d105.84277027587399!3d21.023133387970726!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3135ab96b613d9bb%3A0x63351d8b1aa7066f!2zVHLhu5FuZyDEkOG7k25nIFBhbGFjZSBRdcOhbiBT4bup!5e0!3m2!1svi!2s!4v1709470000000!5m2!1svi!2s,Link nhúng bản đồ iframe
+nhac_youtube_url,https://www.youtube.com/watch?v=3UyotSd-Cp4,Link YouTube bài hát cưới phát nền
+nhac_tieu_de,Ánh Nắng Của Anh - Đức Phúc,Tên bài hát hiển thị

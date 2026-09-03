@@ -3,7 +3,7 @@ import { Calendar, MapPin, Heart, ChevronDown, Utensils } from 'lucide-react';
 import SongHyIcon from './SongHyIcon';
 import { weddingConfig } from '../config/weddingConfig';
 
-export default function Hero({ guest }) {
+export default function Hero({ guest, config = weddingConfig }) {
   const scrollToDetails = () => {
     const section = document.getElementById('event-details');
     if (section) {
@@ -33,10 +33,10 @@ export default function Hero({ guest }) {
       {/* Main Couple Names */}
       <div className="relative z-10 my-8 space-y-4 max-w-2xl mx-auto">
         <h1 className="font-serif text-4xl sm:text-6xl md:text-7xl font-bold tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-yellow-100 to-amber-300 drop-shadow-md">
-          {weddingConfig.groom.shortName} <span className="font-script text-3xl sm:text-5xl text-amber-400">&</span> {weddingConfig.bride.shortName}
+          {config.groom.shortName} <span className="font-script text-3xl sm:text-5xl text-amber-400">&</span> {config.bride.shortName}
         </h1>
         <p className="text-stone-300 font-serif italic text-base sm:text-lg">
-          {weddingConfig.groom.fullName} &amp; {weddingConfig.bride.fullName}
+          {config.groom.fullName} &amp; {config.bride.fullName}
         </p>
       </div>
 
@@ -83,7 +83,7 @@ export default function Hero({ guest }) {
 
         <div className="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-wedding-red-700/70 border border-amber-300/30 text-amber-200 text-sm sm:text-base font-medium">
           <Calendar className="w-4 h-4 text-amber-300" />
-          <span>{weddingConfig.displayDate}</span>
+          <span>{config.displayDate}</span>
         </div>
       </div>
 

@@ -2,7 +2,7 @@ import React from 'react';
 import { weddingConfig } from '../config/weddingConfig';
 import SongHyIcon from './SongHyIcon';
 
-export default function CoupleStory() {
+export default function CoupleStory({ config = weddingConfig }) {
   return (
     <section className="py-20 px-4 bg-gradient-to-b from-[#FFFDF9] via-rose-50/30 to-[#FFFDF9]">
       <div className="max-w-4xl mx-auto text-center">
@@ -24,8 +24,8 @@ export default function CoupleStory() {
           <div className="flex flex-col items-center bg-white p-6 sm:p-8 rounded-3xl shadow-md border border-amber-200/60 transition-transform duration-300 hover:-translate-y-1">
             <div className="relative mb-5">
               <img
-                src={weddingConfig.groom.avatar}
-                alt={weddingConfig.groom.fullName}
+                src={config.groom.avatar}
+                alt={config.groom.fullName}
                 className="w-40 h-40 sm:w-48 sm:h-48 rounded-full object-cover border-4 border-amber-300 shadow-md"
               />
               <span className="absolute bottom-1 right-2 px-3 py-1 bg-wedding-red text-amber-200 text-xs font-semibold rounded-full shadow border border-amber-300">
@@ -33,14 +33,14 @@ export default function CoupleStory() {
               </span>
             </div>
             <h4 className="font-serif text-2xl font-bold text-stone-800 mb-1">
-              {weddingConfig.groom.fullName}
+              {config.groom.fullName}
             </h4>
             <p className="text-xs uppercase tracking-wider text-amber-600 font-semibold mb-4">
-              Nhà Trai • {weddingConfig.groom.address}
+              Nhà Trai • {config.groom.address}
             </p>
             <div className="text-sm text-stone-600 space-y-1 border-t border-stone-100 pt-3 w-full">
-              <p><span className="font-medium text-stone-700">Thân phụ:</span> {weddingConfig.groom.father}</p>
-              <p><span className="font-medium text-stone-700">Thân mẫu:</span> {weddingConfig.groom.mother}</p>
+              <p><span className="font-medium text-stone-700">Thân phụ:</span> {config.groom.father}</p>
+              <p><span className="font-medium text-stone-700">Thân mẫu:</span> {config.groom.mother}</p>
             </div>
           </div>
 
@@ -48,8 +48,8 @@ export default function CoupleStory() {
           <div className="flex flex-col items-center bg-white p-6 sm:p-8 rounded-3xl shadow-md border border-amber-200/60 transition-transform duration-300 hover:-translate-y-1">
             <div className="relative mb-5">
               <img
-                src={weddingConfig.bride.avatar}
-                alt={weddingConfig.bride.fullName}
+                src={config.bride.avatar}
+                alt={config.bride.fullName}
                 className="w-40 h-40 sm:w-48 sm:h-48 rounded-full object-cover border-4 border-amber-300 shadow-md"
               />
               <span className="absolute bottom-1 right-2 px-3 py-1 bg-wedding-red text-amber-200 text-xs font-semibold rounded-full shadow border border-amber-300">
@@ -57,14 +57,14 @@ export default function CoupleStory() {
               </span>
             </div>
             <h4 className="font-serif text-2xl font-bold text-stone-800 mb-1">
-              {weddingConfig.bride.fullName}
+              {config.bride.fullName}
             </h4>
             <p className="text-xs uppercase tracking-wider text-amber-600 font-semibold mb-4">
-              Nhà Gái • {weddingConfig.bride.address}
+              Nhà Gái • {config.bride.address}
             </p>
             <div className="text-sm text-stone-600 space-y-1 border-t border-stone-100 pt-3 w-full">
-              <p><span className="font-medium text-stone-700">Thân phụ:</span> {weddingConfig.bride.father}</p>
-              <p><span className="font-medium text-stone-700">Thân mẫu:</span> {weddingConfig.bride.mother}</p>
+              <p><span className="font-medium text-stone-700">Thân phụ:</span> {config.bride.father}</p>
+              <p><span className="font-medium text-stone-700">Thân mẫu:</span> {config.bride.mother}</p>
             </div>
           </div>
         </div>

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { CalendarPlus, Heart } from 'lucide-react';
 import { weddingConfig } from '../config/weddingConfig';
 
-export default function Countdown() {
+export default function Countdown({ config = weddingConfig }) {
   const [timeLeft, setTimeLeft] = useState({
     days: 0,
     hours: 0,
@@ -12,7 +12,7 @@ export default function Countdown() {
   });
 
   useEffect(() => {
-    const targetDate = new Date(weddingConfig.weddingDate).getTime();
+    const targetDate = new Date(config.weddingDate).getTime();
 
     const calculateTime = () => {
       const now = new Date().getTime();
@@ -34,15 +34,15 @@ export default function Countdown() {
     calculateTime();
     const interval = setInterval(calculateTime, 1000);
     return () => clearInterval(interval);
-  }, []);
+  }, [config.weddingDate]);
 
   // Google Calendar URL generator
   const getGoogleCalendarUrl = () => {
-    const startTime = "20261025T040000Z"; // 11:00 UTC+7 -> 04:00 UTC
+    const startTime = "20261025T040000Z";
     const endTime = "20261025T080000Z";
-    const title = encodeURIComponent(`Đám Cưới ${weddingConfig.groom.shortName} & ${weddingConfig.bride.shortName}`);
-    const details = encodeURIComponent(`Lễ thành hôn & tiệc cưới của ${weddingConfig.groom.fullName} & ${weddingConfig.bride.fullName}`);
-    const location = encodeURIComponent(`${weddingConfig.restaurant.name}, ${weddingConfig.restaurant.address}`);
+    const title = encodeURIComponent(`Đám Cưới ${config.groom.shortName} & ${config.bride.shortName}`);
+    const details = encodeURIComponent(`Lễ thành hôn & tiệc cưới của ${config.groom.fullName} & ${config.bride.fullName}`);
+    const location = encodeURIComponent(`${config.restaurant.name}, ${config.restaurant.address}`);
     return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${startTime}/${endTime}&details=${details}&location=${location}`;
   };
 
@@ -61,7 +61,7 @@ export default function Countdown() {
           Cùng Đếm Ngược Tới Giờ G
         </h3>
         <p className="text-stone-600 max-w-md mx-auto mb-8 text-sm sm:text-base">
-          {weddingConfig.displayDate} ({weddingConfig.lunarDate})
+          {config.displayDate} ({config.lunarDate})
         </p>
 
         {/* Countdown Cards */}

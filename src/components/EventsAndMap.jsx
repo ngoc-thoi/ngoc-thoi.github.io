@@ -2,11 +2,11 @@ import React, { useState } from 'react';
 import { Navigation, MapPin, Clock, Copy, Check, ExternalLink } from 'lucide-react';
 import { weddingConfig } from '../config/weddingConfig';
 
-export default function EventsAndMap() {
+export default function EventsAndMap({ config = weddingConfig }) {
   const [copied, setCopied] = useState(false);
 
   const copyAddress = () => {
-    navigator.clipboard.writeText(weddingConfig.restaurant.address);
+    navigator.clipboard.writeText(config.restaurant.address);
     setCopied(true);
     setTimeout(() => setCopied(false), 2500);
   };
@@ -28,7 +28,7 @@ export default function EventsAndMap() {
 
         {/* Timeline Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
-          {weddingConfig.events.map((event, idx) => (
+          {config.events.map((event, idx) => (
             <div
               key={idx}
               className={`relative p-6 rounded-2xl transition-all duration-300 ${
@@ -69,21 +69,21 @@ export default function EventsAndMap() {
                   Địa Điểm Đãi Tiệc
                 </span>
                 <h4 className="font-serif text-2xl sm:text-3xl font-bold text-amber-100">
-                  {weddingConfig.restaurant.name}
+                  {config.restaurant.name}
                 </h4>
                 <p className="text-amber-300 text-sm font-medium mt-1">
-                  {weddingConfig.restaurant.hall}
+                  {config.restaurant.hall}
                 </p>
                 <p className="text-stone-300 text-sm sm:text-base mt-2 flex items-start gap-2">
                   <MapPin className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
-                  <span>{weddingConfig.restaurant.address}</span>
+                  <span>{config.restaurant.address}</span>
                 </p>
               </div>
 
               {/* Action Buttons: Google Maps Direction & Copy Address */}
               <div className="flex flex-col sm:flex-row gap-3 shrink-0">
                 <a
-                  href={weddingConfig.restaurant.googleMapsDirectionsUrl}
+                  href={config.restaurant.googleMapsDirectionsUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-wedding-red-950 font-bold text-sm sm:text-base shadow-lg hover:shadow-amber-400/30 transition-all duration-200"
@@ -117,7 +117,7 @@ export default function EventsAndMap() {
           <div className="relative w-full h-[360px] sm:h-[420px] bg-stone-100">
             <iframe
               title="Vị trí nhà hàng tiệc cưới"
-              src={weddingConfig.restaurant.googleMapsEmbedUrl}
+              src={config.restaurant.googleMapsEmbedUrl}
               width="100%"
               height="100%"
               style={{ border: 0 }}
@@ -130,7 +130,7 @@ export default function EventsAndMap() {
             {/* Quick overlay link */}
             <div className="absolute bottom-4 right-4 z-10">
               <a
-                href={weddingConfig.restaurant.googleMapsDirectionsUrl}
+                href={config.restaurant.googleMapsDirectionsUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white/95 backdrop-blur-sm text-stone-800 text-xs font-semibold rounded-lg shadow-md hover:bg-white hover:text-wedding-red transition-colors"
