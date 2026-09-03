@@ -1,9 +1,15 @@
 <!doctype html>
-<html lang="vi">
+<html lang="vi" class="light" style="color-scheme: light only; background-color: #FFFDF9 !important;">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>囍</text></svg>" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    
+    <!-- Enforce light theme and disable OS/browser dark mode inversion -->
+    <meta name="color-scheme" content="light only" />
+    <meta name="supported-color-schemes" content="light" />
+    <meta name="theme-color" content="#C8102E" />
+
     <title>Thiệp Cưới Ngọc &amp; Thơi | Wedding Invitation</title>
     
     <!-- Open Graph for Facebook, Zalo, iMessage -->
@@ -16,8 +22,22 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Dancing+Script:wght@600;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,800;1,400;1,600&display=swap" rel="stylesheet">
+
+    <!-- Anti-Dark-Mode Forced Color Locking -->
+    <style>
+      :root {
+        color-scheme: light only !important;
+        forced-color-adjust: none !important;
+        -webkit-color-scheme: light only !important;
+      }
+      html, body {
+        background-color: #FFFDF9 !important;
+        color: #1c1917 !important;
+        forced-color-adjust: none !important;
+      }
+    </style>
   </head>
-  <body class="bg-[#FFFDF9] text-stone-800 font-sans antialiased selection:bg-red-800 selection:text-amber-200">
+  <body class="bg-[#FFFDF9] text-stone-800 font-sans antialiased selection:bg-red-700 selection:text-amber-200" style="color-scheme: light only;">
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>

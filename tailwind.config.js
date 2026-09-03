@@ -4,22 +4,24 @@ export default {
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
+  darkMode: 'class', // Disable automatic media query dark mode
   theme: {
     extend: {
       colors: {
         'wedding-red': {
-          DEFAULT: '#8B0000',
-          50: '#fdf2f2',
-          100: '#fde8e8',
-          200: '#fbd5d5',
-          300: '#f8b4b4',
-          400: '#f98080',
-          500: '#e02424',
-          600: '#c81e1e',
-          700: '#9b1c1c',
-          800: '#771d1d',
-          900: '#580c10',
-          deep: '#420609',
+          DEFAULT: '#C8102E', // Vibrant, festive celebratory red
+          50: '#fff1f2',
+          100: '#ffe4e6',
+          200: '#fecdd3',
+          300: '#fda4af',
+          400: '#fb7185',
+          500: '#f43f5e',
+          600: '#e11d48',
+          700: '#c8102e', // Vietnamese wedding scarlet
+          800: '#a30d25', // Bright celebratory crimson
+          900: '#83081c', // Rich bright ruby red (not dark brown)
+          950: '#5c0613',
+          deep: '#6b0816',
         },
         'wedding-gold': {
           DEFAULT: '#D4AF37',
@@ -37,7 +39,7 @@ export default {
       },
       boxShadow: {
         'gold': '0 4px 20px -2px rgba(212, 175, 55, 0.35)',
-        'red': '0 10px 25px -3px rgba(139, 0, 0, 0.4)',
+        'red': '0 10px 25px -3px rgba(200, 16, 46, 0.4)',
       },
       animation: {
         'spin-slow': 'spin 12s linear infinite',

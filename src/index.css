@@ -2,6 +2,32 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Strict Light Mode Enforcement across all devices and browsers */
+:root {
+  color-scheme: light only !important;
+  forced-color-adjust: none !important;
+  -webkit-color-scheme: light only !important;
+}
+
+html, body {
+  color-scheme: light only !important;
+  forced-color-adjust: none !important;
+  background-color: #FFFDF9 !important;
+  color: #1c1917 !important;
+  scroll-behavior: smooth;
+}
+
+/* Prevent mobile browser forced-dark inversion of white cards and light text */
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: light only !important;
+  }
+  html, body {
+    background-color: #FFFDF9 !important;
+    color: #1c1917 !important;
+  }
+}
+
 @layer utilities {
   .text-gold-gradient {
     @apply bg-clip-text text-transparent bg-gradient-to-r from-amber-600 via-amber-400 to-yellow-600;
@@ -14,11 +40,7 @@
   }
 }
 
-html {
-  scroll-behavior: smooth;
-}
-
-/* Custom scrollbar */
+/* Custom scrollbar in bright celebratory red */
 ::-webkit-scrollbar {
   width: 8px;
 }
@@ -26,11 +48,11 @@ html {
   background: #FFFDF9;
 }
 ::-webkit-scrollbar-thumb {
-  background: #9b1c1c;
+  background: #c8102e;
   border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #771d1d;
+  background: #a30d25;
 }
 
 /* Floating animation */

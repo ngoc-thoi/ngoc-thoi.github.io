@@ -4,8 +4,8 @@ import { Sparkles } from 'lucide-react';
 
 export default function PetalEffects() {
   const triggerConfetti = () => {
-    // Red, pink, and gold petals/confetti
-    const colors = ['#8B0000', '#B91C1C', '#D4AF37', '#FDE047', '#FDA4AF'];
+    // Bright celebratory red, pink, and gold petals/confetti
+    const colors = ['#C8102E', '#E11D48', '#D4AF37', '#FDE047', '#FDA4AF'];
 
     confetti({
       particleCount: 40,
