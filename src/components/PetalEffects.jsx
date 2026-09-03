@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import confetti from 'canvas-confetti';
 import { Sparkles } from 'lucide-react';
 
@@ -23,14 +23,7 @@ export default function PetalEffects() {
     });
   };
 
-  useEffect(() => {
-    // Initial romantic shower
-    const timer = setTimeout(() => {
-      triggerConfetti();
-    }, 1500);
 
-    return () => clearTimeout(timer);
-  }, []);
 
   return (
     <button

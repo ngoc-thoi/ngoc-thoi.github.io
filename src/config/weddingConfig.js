@@ -74,10 +74,13 @@ export const weddingConfig = {
     }
   ],
 
-  // Background Music
+  // Background Music (Supports any YouTube URL or Video ID)
   music: {
-    title: "Ánh Nắng Của Anh (Acoustic Instrumental)",
-    url: "https://cdn.pixabay.com/download/audio/2022/03/15/audio_c8c8a73467.mp3?filename=romantic-wedding-acoustic-110031.mp3"
+    title: "Ánh Nắng Của Anh (Nhạc Cưới Lãng Mạn)",
+    // Paste any YouTube URL or Video ID here
+    youtubeUrl: "https://www.youtube.com/watch?v=1YBl3Zbt80A",
+    // Fallback direct audio if needed
+    fallbackAudioUrl: ""
   },
 
   // Photo Gallery Placeholders (high resolution romantic wedding shots)

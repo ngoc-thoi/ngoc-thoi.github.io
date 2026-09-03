@@ -24,7 +24,7 @@ export default function Hero({ guest }) {
 
       {/* Top Header */}
       <div className="relative z-10 pt-4 flex flex-col items-center space-y-2">
-        <SongHyIcon className="w-16 h-16 text-amber-300 animate-pulse-soft" />
+        <SongHyIcon className="w-16 h-16 text-amber-300 drop-shadow" />
         <p className="text-xs sm:text-sm tracking-[0.3em] uppercase text-amber-300/90 font-medium">
           Save Our Date • Lễ Thành Hôn
         </p>
@@ -41,7 +41,7 @@ export default function Hero({ guest }) {
       </div>
 
       {/* Personalized Invitation Card for Friend */}
-      <div className="relative z-10 w-full max-w-lg mx-auto bg-wedding-red-deep/80 backdrop-blur-md rounded-2xl border-2 border-amber-400/40 p-6 sm:p-8 shadow-2xl shadow-black/40 transform hover:scale-[1.01] transition-transform duration-300">
+      <div className="relative z-10 w-full max-w-lg mx-auto bg-wedding-red-950/90 rounded-2xl border-2 border-amber-400/40 p-6 sm:p-8 shadow-2xl shadow-black/50">
         <div className="inline-block px-3 py-1 mb-3 rounded-full bg-amber-400/15 border border-amber-400/30 text-amber-300 text-xs tracking-wider uppercase">
           Thiệp Mời Thân Mật
         </div>
@@ -94,7 +94,7 @@ export default function Hero({ guest }) {
           className="group flex flex-col items-center gap-2 text-amber-200/80 hover:text-amber-100 transition-colors"
         >
           <span className="text-xs uppercase tracking-widest">Xem Chi Tiết &amp; Chỉ Đường</span>
-          <ChevronDown className="w-5 h-5 animate-bounce text-amber-300" />
+          <ChevronDown className="w-5 h-5 text-amber-300 group-hover:translate-y-1 transition-transform" />
         </button>
       </div>
     </section>

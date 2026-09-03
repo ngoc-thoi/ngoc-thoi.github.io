@@ -11,7 +11,8 @@ import {
   Clock, 
   X,
   Users,
-  Share2
+  Share2,
+  Music
 } from 'lucide-react';
 import { 
   fetchGuestsFromGoogleSheet, 
@@ -23,6 +24,10 @@ export default function AdminDashboard({ onClose, onReloadData }) {
   const [sheetInput, setSheetInput] = useState(() => {
     return localStorage.getItem('wedding_sheet_id') || weddingConfig.googleSheets.sheetId || '';
   });
+  const [ytInput, setYtInput] = useState(() => {
+    return localStorage.getItem('wedding_youtube_url') || weddingConfig.music.youtubeUrl || '';
+  });
+  const [ytSaved, setYtSaved] = useState(false);
   const [guests, setGuests] = useState([]);
   const [loading, setLoading] = useState(false);
   const [statusMsg, setStatusMsg] = useState('');
@@ -348,6 +353,41 @@ export default function AdminDashboard({ onClose, onReloadData }) {
                     {statusMsg}
                   </div>
                 )}
+              </div>
+
+              {/* YouTube Background Music Configuration */}
+              <div className="bg-white p-6 rounded-2xl border border-stone-200 shadow-sm space-y-4">
+                <h3 className="font-bold text-lg text-stone-800 flex items-center gap-2">
+                  <Music className="w-5 h-5 text-red-600" />
+                  <span>Nhạc Nền YouTube</span>
+                </h3>
+                <p className="text-sm text-stone-600">
+                  Dán đường link bất kỳ bài hát YouTube nào (hoặc Video ID) bạn muốn phát làm nhạc nền khi khách mở thiệp cưới.
+                </p>
+                <div className="space-y-2">
+                  <label className="block text-xs font-bold uppercase text-stone-700">
+                    Đường dẫn YouTube (URL hoặc Video ID)
+                  </label>
+                  <input
+                    type="text"
+                    value={ytInput}
+                    onChange={(e) => setYtInput(e.target.value)}
+                    placeholder="https://www.youtube.com/watch?v=1YBl3Zbt80A"
+                    className="w-full px-4 py-2.5 rounded-xl border border-stone-300 text-sm focus:border-wedding-red focus:outline-none font-mono"
+                  />
+                </div>
+                <button
+                  onClick={() => {
+                    localStorage.setItem('wedding_youtube_url', ytInput.trim());
+                    setYtSaved(true);
+                    setTimeout(() => setYtSaved(false), 2500);
+                    if (onReloadData) onReloadData();
+                  }}
+                  className="w-full py-2.5 rounded-xl bg-wedding-red hover:bg-wedding-red-700 text-white font-semibold text-sm transition-colors flex items-center justify-center gap-2"
+                >
+                  <Music className="w-4 h-4" />
+                  <span>{ytSaved ? "Đã Lưu & Đang Áp Dụng Nhạc Mới!" : "Lưu Link Nhạc YouTube"}</span>
+                </button>
               </div>
 
               {/* Step by step guide */}
