@@ -46,8 +46,8 @@ export default function Countdown({ config = weddingConfig }) {
     const startTime = formatCalDate(d);
     const endD = new Date(d.getTime() + 4 * 60 * 60 * 1000); // 4-hour wedding celebration
     const endTime = formatCalDate(endD);
-    const title = encodeURIComponent(`Đám Cưới ${config.groom.shortName} & ${config.bride.shortName}`);
-    const details = encodeURIComponent(`Lễ thành hôn & tiệc cưới của ${config.groom.fullName} & ${config.bride.fullName}`);
+    const title = encodeURIComponent(`Tiệc Báo Hỷ ${config.groom.shortName} & ${config.bride.shortName}`);
+    const details = encodeURIComponent(`Tiệc báo hỷ chung vui cùng ${config.groom.fullName} & ${config.bride.fullName}`);
     const location = encodeURIComponent(`${config.restaurant.name}, ${config.restaurant.address}`);
     return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${startTime}/${endTime}&details=${details}&location=${location}`;
   };

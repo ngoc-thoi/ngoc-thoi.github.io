@@ -143,6 +143,8 @@ export function mergeConfig(remoteMap) {
   }
 
   return {
+    eventType: fallbackConfig.eventType,
+    heroPhoto: fallbackConfig.heroPhoto,
     groom: {
       ...fallbackConfig.groom,
       shortName: remoteMap['chu_re_ten_ngan'] || fallbackConfig.groom.shortName,

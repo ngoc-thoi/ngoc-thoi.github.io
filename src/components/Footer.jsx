@@ -3,7 +3,7 @@ import { Heart, Settings } from 'lucide-react';
 import SongHyIcon from './SongHyIcon';
 import { weddingConfig } from '../config/weddingConfig';
 
-export default function Footer({ onOpenAdmin, config = weddingConfig }) {
+export default function Footer({ onOpenAdmin, config = weddingConfig, onReopenEnvelope }) {
   return (
     <footer className="py-16 px-4 bg-gradient-to-b from-wedding-red-900 to-wedding-red-deep text-center text-amber-100 relative overflow-hidden border-t-2 border-amber-400/30">
       <div className="max-w-md mx-auto space-y-4 relative z-10">
@@ -18,17 +18,29 @@ export default function Footer({ onOpenAdmin, config = weddingConfig }) {
         </p>
 
         <div className="pt-6 border-t border-amber-400/20 flex items-center justify-between text-xs text-stone-400">
-          <span>{config.weddingDate.substring(0, 4)} • Wedding Invitation</span>
+          <span>{config.weddingDate.substring(0, 4)} • Tiệc Báo Hỷ</span>
           
-          {/* Discreet Admin Button */}
-          <button
-            onClick={onOpenAdmin}
-            className="flex items-center gap-1 px-2.5 py-1 rounded-md bg-white/5 hover:bg-white/15 text-stone-300 hover:text-amber-200 transition-colors"
-            title="Quản lý khách mời & Google Sheet"
-          >
-            <Settings className="w-3.5 h-3.5" />
-            <span>Quản Lý</span>
-          </button>
+          <div className="flex items-center gap-2">
+            {onReopenEnvelope && (
+              <button
+                onClick={onReopenEnvelope}
+                className="flex items-center gap-1 px-2.5 py-1 rounded-md bg-white/5 hover:bg-white/15 text-stone-300 hover:text-amber-200 transition-colors"
+                title="Mở lại phong bì thiệp mời"
+              >
+                <span>Xem Lại Phong Bì</span>
+              </button>
+            )}
+
+            {/* Discreet Admin Button */}
+            <button
+              onClick={onOpenAdmin}
+              className="flex items-center gap-1 px-2.5 py-1 rounded-md bg-white/5 hover:bg-white/15 text-stone-300 hover:text-amber-200 transition-colors"
+              title="Quản lý khách mời & Google Sheet"
+            >
+              <Settings className="w-3.5 h-3.5" />
+              <span>Quản Lý</span>
+            </button>
+          </div>
         </div>
       </div>
     </footer>

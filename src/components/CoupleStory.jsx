@@ -26,7 +26,7 @@ export default function CoupleStory({ config = weddingConfig }) {
               <img
                 src={config.groom.avatar}
                 alt={config.groom.fullName}
-                className="w-40 h-40 sm:w-48 sm:h-48 rounded-full object-cover border-4 border-amber-300 shadow-md"
+                className="w-40 h-40 sm:w-48 sm:h-48 rounded-full object-cover object-center border-4 border-amber-300 shadow-md"
               />
               <span className="absolute bottom-1 right-2 px-3 py-1 bg-wedding-red text-amber-200 text-xs font-semibold rounded-full shadow border border-amber-300">
                 Chú Rể
@@ -50,7 +50,7 @@ export default function CoupleStory({ config = weddingConfig }) {
               <img
                 src={config.bride.avatar}
                 alt={config.bride.fullName}
-                className="w-40 h-40 sm:w-48 sm:h-48 rounded-full object-cover border-4 border-amber-300 shadow-md"
+                className="w-40 h-40 sm:w-48 sm:h-48 rounded-full object-cover object-center border-4 border-amber-300 shadow-md"
               />
               <span className="absolute bottom-1 right-2 px-3 py-1 bg-wedding-red text-amber-200 text-xs font-semibold rounded-full shadow border border-amber-300">
                 Cô Dâu

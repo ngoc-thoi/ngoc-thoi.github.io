@@ -19,10 +19,10 @@ export default function EventsAndMap({ config = weddingConfig }) {
             Thời Gian &amp; Địa Điểm
           </span>
           <h3 className="font-serif text-3xl sm:text-4xl text-wedding-red font-bold mt-1 mb-3">
-            Sự Kiện &amp; Tiệc Cưới
+            Chương Trình Tiệc Báo Hỷ
           </h3>
           <p className="text-stone-600 text-sm sm:text-base">
-            Sự hiện diện của bạn là niềm vinh hạnh và món quà ý nghĩa nhất đối với gia đình chúng mình.
+            Sự hiện diện của bạn là niềm vinh hạnh và món quà ý nghĩa nhất đối với chúng mình.
           </p>
         </div>
 
@@ -39,7 +39,7 @@ export default function EventsAndMap({ config = weddingConfig }) {
             >
               {event.highlight && (
                 <span className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 bg-amber-400 text-wedding-red-900 text-xs font-bold rounded-full uppercase tracking-wider shadow">
-                  Tiệc Mừng Chính
+                  Tiệc Báo Hỷ
                 </span>
               )}
               <h4 className={`font-serif text-xl font-bold mb-3 ${event.highlight ? 'text-amber-200' : 'text-wedding-red'}`}>
@@ -66,7 +66,7 @@ export default function EventsAndMap({ config = weddingConfig }) {
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
               <div>
                 <span className="inline-block px-3 py-1 mb-2 rounded-full bg-amber-400/20 text-amber-300 text-xs uppercase font-semibold tracking-wider">
-                  Địa Điểm Đãi Tiệc
+                  Địa Điểm Tiệc Báo Hỷ
                 </span>
                 <h4 className="font-serif text-2xl sm:text-3xl font-bold text-amber-100">
                   {config.restaurant.name}

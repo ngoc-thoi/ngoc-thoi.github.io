@@ -6,6 +6,7 @@ import EventsAndMap from './components/EventsAndMap';
 import PhotoGallery from './components/PhotoGallery';
 import AudioPlayer from './components/AudioPlayer';
 import PetalEffects from './components/PetalEffects';
+import EnvelopeModal from './components/EnvelopeModal';
 import Footer from './components/Footer';
 import AdminDashboard from './components/AdminDashboard';
 import { useGuest } from './hooks/useGuest';
@@ -13,12 +14,16 @@ import { useGuest } from './hooks/useGuest';
 export default function App() {
   const { guest, allGuests, config, loading, refreshAll } = useGuest();
   const [showAdmin, setShowAdmin] = useState(false);
+  const [showEnvelope, setShowEnvelope] = useState(() => {
+    return window.location.hash !== '#admin';
+  });
 
   // Check if user visited with #admin in URL
   useEffect(() => {
     const handleHashChange = () => {
       if (window.location.hash === '#admin') {
         setShowAdmin(true);
+        setShowEnvelope(false);
       }
     };
 
@@ -42,13 +47,28 @@ export default function App() {
       {/* Falling Flower Confetti / Petals */}
       <PetalEffects />
 
-      {/* Main Wedding Invitation Sections */}
+      {/* ChungDoi-inspired Interactive Envelope Modal */}
+      {showEnvelope && !showAdmin && (
+        <EnvelopeModal
+          guest={guest}
+          config={config}
+          onOpen={() => {
+            // User opened envelope
+          }}
+        />
+      )}
+
+      {/* Main Wedding / Tiệc Báo Hỷ Invitation Sections */}
       <Hero guest={guest} config={config} />
       <Countdown config={config} />
       <CoupleStory config={config} />
       <EventsAndMap config={config} />
-      <PhotoGallery />
-      <Footer onOpenAdmin={() => setShowAdmin(true)} config={config} />
+      <PhotoGallery config={config} />
+      <Footer 
+        onOpenAdmin={() => setShowAdmin(true)} 
+        config={config} 
+        onReopenEnvelope={() => setShowEnvelope(true)}
+      />
 
       {/* Secret / Built-in Admin Manager Modal */}
       {showAdmin && (

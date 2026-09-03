@@ -1,6 +1,15 @@
 // Sample default guests for offline testing or fallback
 export const defaultGuests = [
   {
+    id: "sep-hieu",
+    prefix: "Thân Mời",
+    name: "Sếp Hiếu + ❤️",
+    group: "Đồng Nghiệp & Bạn Bè",
+    table: "",
+    message: "Đến dự buổi tiệc báo hỷ chung vui cùng gia đình chúng em!",
+    phone: "0900000001"
+  },
+  {
     id: "duc-nv",
     prefix: "Bạn",
     name: "Nguyễn Văn Đức",
