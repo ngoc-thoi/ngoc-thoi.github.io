@@ -29,10 +29,15 @@ export function useGuest() {
     const directTable = params.get('table') || params.get('b') || '';
     const directMsg = params.get('msg') || '';
 
-    // Purge any stale cache with placeholder unsplash images
+    // Purge any stale cache with placeholder unsplash images, old dates, or old venues
     try {
       const cached = localStorage.getItem('wedding_config_data');
-      if (cached && cached.includes('unsplash.com')) {
+      if (cached && (
+        cached.includes('unsplash.com') ||
+        cached.includes('2026-10-25') ||
+        cached.includes('Trống Đồng') ||
+        cached.includes('Quán Sứ')
+      )) {
         localStorage.removeItem('wedding_config_data');
       }
     } catch {}

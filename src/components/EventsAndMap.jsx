@@ -80,17 +80,29 @@ export default function EventsAndMap({ config = weddingConfig }) {
                 </p>
               </div>
 
-              {/* Action Buttons: Google Maps Direction & Copy Address */}
-              <div className="flex flex-col sm:flex-row gap-3 shrink-0">
+              {/* Action Buttons: Google Maps Direction, Apple Maps & Copy Address */}
+              <div className="flex flex-wrap items-center gap-2.5 shrink-0">
                 <a
                   href={config.restaurant.googleMapsDirectionsUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-wedding-red-950 font-bold text-sm sm:text-base shadow-lg hover:shadow-amber-400/30 transition-all duration-200"
+                  className="flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-amber-400 hover:bg-amber-300 text-wedding-red-950 font-bold text-sm shadow-lg hover:shadow-amber-400/30 transition-all duration-200"
                 >
-                  <Navigation className="w-5 h-5 fill-current" />
-                  <span>Chỉ Đường (Google Maps)</span>
+                  <Navigation className="w-4 h-4 fill-current" />
+                  <span>Google Maps</span>
                 </a>
+
+                {config.restaurant.appleMapsUrl && (
+                  <a
+                    href={config.restaurant.appleMapsUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-center gap-1.5 px-4 py-3 rounded-xl bg-white/15 hover:bg-white/25 text-stone-100 font-medium text-sm border border-white/20 transition-all duration-200"
+                  >
+                    <MapPin className="w-4 h-4 text-amber-300" />
+                    <span>Apple Maps</span>
+                  </a>
+                )}
 
                 <button
                   onClick={copyAddress}

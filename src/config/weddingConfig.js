@@ -39,12 +39,13 @@ export const weddingConfig = {
   restaurant: {
     name: "Ẩm Thực Thất Sơn",
     hall: "Sảnh Tiệc Báo Hỷ",
-    address: "104 Nguyễn Thị Kiêu, Thới An, Quận 12, TP. Hồ Chí Minh",
+    address: "104 Nguyễn Thị Kiêu, Thới An, Hồ Chí Minh (Ẩm thực Thất Sơn)",
     time: "17:30",
     date: "20/09/2026",
     banquetTime: "18:00",
-    googleMapsDirectionsUrl: "https://www.google.com/maps/dir/?api=1&destination=%E1%BA%A8m+th%E1%BB%B1c+Th%E1%BA%A5t+S%E1%BB%91n+104+Nguy%E1%BB%85n+Th%E1%BB%8B+Ki%C3%AAu+Th%E1%BB%9Bi+An+Qu%E1%BA%ADn+12+H%E1%BB%93+Ch%C3%AD+Minh",
-    googleMapsEmbedUrl: "https://maps.google.com/maps?q=104%20Nguy%E1%BB%85n%20Th%E1%BB%8B%20Ki%C3%AAu,%20Th%E1%BB%9Bi%20An,%20Qu%E1%BA%ADn%2012,%20H%E1%BB%93%20Ch%C3%AD%20Minh&t=&z=16&ie=UTF8&iwloc=&output=embed"
+    googleMapsDirectionsUrl: "https://www.google.com/maps/dir/?api=1&destination=104+Nguy%E1%BB%85n+Th%E1%BB%8B+Ki%C3%AAu%2C+Th%E1%BB%9Bi+An%2C+Qu%E1%BA%ADn+12%2C+H%E1%BB%93+Ch%C3%AD+Minh+(%E1%BA%A8m+th%E1%BB%B1c+Th%E1%BA%A5t+S%E1%BB%91n)",
+    googleMapsEmbedUrl: "https://maps.google.com/maps?q=104%20Nguy%E1%BB%85n%20Th%E1%BB%8B%20Ki%C3%AAu,%20Th%E1%BB%9Bi%20An,%20Qu%E1%BA%ADn%2012,%20H%E1%BB%93%20Ch%C3%AD%20Minh&t=&z=16&ie=UTF8&iwloc=&output=embed",
+    appleMapsUrl: "https://maps.apple.com/?q=104+Nguy%E1%BB%85n+Th%E1%BB%8B+Ki%C3%AAu,+Th%E1%BB%9Bi+An,+Qu%E1%BA%ADn+12,+H%E1%BB%93+Ch%C3%AD+Minh"
   },
 
   // Tiệc Báo Hỷ Schedule

@@ -142,7 +142,22 @@ export function mergeConfig(remoteMap) {
     rawDate = rawDate.replace(' ', 'T');
   }
 
-  const isPlaceholder = (url) => !url || typeof url !== 'string' || url.includes('unsplash.com');
+  const isOldPlaceholder = (val) => {
+    if (!val || typeof val !== 'string') return false;
+    const lower = val.toLowerCase();
+    return lower.includes('trống đồng') || 
+           lower.includes('quán sứ') || 
+           lower.includes('2026-10-25') || 
+           lower.includes('25 tháng 10') ||
+           lower.includes('15 tháng 09') ||
+           lower.includes('unsplash.com');
+  };
+
+  const validOrFallback = (remoteVal, fallbackVal) => {
+    if (!remoteVal || typeof remoteVal !== 'string') return fallbackVal;
+    if (isOldPlaceholder(remoteVal)) return fallbackVal;
+    return remoteVal;
+  };
 
   return {
     eventType: fallbackConfig.eventType,
@@ -154,7 +169,7 @@ export function mergeConfig(remoteMap) {
       father: remoteMap['chu_re_bo'] || fallbackConfig.groom.father,
       mother: remoteMap['chu_re_me'] || fallbackConfig.groom.mother,
       address: remoteMap['chu_re_dia_chi'] || fallbackConfig.groom.address,
-      avatar: !isPlaceholder(remoteMap['chu_re_anh']) ? remoteMap['chu_re_anh'] : fallbackConfig.groom.avatar,
+      avatar: validOrFallback(remoteMap['chu_re_anh'], fallbackConfig.groom.avatar),
     },
     bride: {
       ...fallbackConfig.bride,
@@ -163,19 +178,21 @@ export function mergeConfig(remoteMap) {
       father: remoteMap['co_dau_bo'] || fallbackConfig.bride.father,
       mother: remoteMap['co_dau_me'] || fallbackConfig.bride.mother,
       address: remoteMap['co_dau_dia_chi'] || fallbackConfig.bride.address,
-      avatar: !isPlaceholder(remoteMap['co_dau_anh']) ? remoteMap['co_dau_anh'] : fallbackConfig.bride.avatar,
+      avatar: validOrFallback(remoteMap['co_dau_anh'], fallbackConfig.bride.avatar),
     },
-    weddingDate: rawDate,
-    displayDate: remoteMap['ngay_cuoi_hien_thi'] || fallbackConfig.displayDate,
-    lunarDate: remoteMap['ngay_cuoi_am_lich'] || fallbackConfig.lunarDate,
+    weddingDate: (!remoteMap['ngay_cuoi_iso'] || isOldPlaceholder(remoteMap['ngay_cuoi_iso']))
+      ? fallbackConfig.weddingDate
+      : rawDate,
+    displayDate: validOrFallback(remoteMap['ngay_cuoi_hien_thi'], fallbackConfig.displayDate),
+    lunarDate: validOrFallback(remoteMap['ngay_cuoi_am_lich'], fallbackConfig.lunarDate),
     restaurant: {
       ...fallbackConfig.restaurant,
-      name: remoteMap['nha_hang_ten'] || fallbackConfig.restaurant.name,
-      hall: remoteMap['nha_hang_sanh'] || fallbackConfig.restaurant.hall,
-      address: remoteMap['nha_hang_dia_chi'] || fallbackConfig.restaurant.address,
-      time: remoteMap['nha_hang_gio'] || fallbackConfig.restaurant.time,
-      googleMapsDirectionsUrl: remoteMap['google_map_chi_duong'] || fallbackConfig.restaurant.googleMapsDirectionsUrl,
-      googleMapsEmbedUrl: remoteMap['google_map_embed'] || fallbackConfig.restaurant.googleMapsEmbedUrl,
+      name: validOrFallback(remoteMap['nha_hang_ten'], fallbackConfig.restaurant.name),
+      hall: validOrFallback(remoteMap['nha_hang_sanh'], fallbackConfig.restaurant.hall),
+      address: validOrFallback(remoteMap['nha_hang_dia_chi'], fallbackConfig.restaurant.address),
+      time: validOrFallback(remoteMap['nha_hang_gio'], fallbackConfig.restaurant.time),
+      googleMapsDirectionsUrl: validOrFallback(remoteMap['google_map_chi_duong'], fallbackConfig.restaurant.googleMapsDirectionsUrl),
+      googleMapsEmbedUrl: validOrFallback(remoteMap['google_map_embed'], fallbackConfig.restaurant.googleMapsEmbedUrl),
     },
     events: fallbackConfig.events,
     music: {
