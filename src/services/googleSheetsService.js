@@ -1,6 +1,13 @@
 import { defaultGuests } from '../data/defaultGuests';
 import { weddingConfig as fallbackConfig } from '../config/weddingConfig';
 
+// Helper to extract clean Sheet ID if full URL is passed
+export function cleanSheetId(idOrUrl) {
+  if (!idOrUrl) return '';
+  const match = idOrUrl.match(/\/d\/([a-zA-Z0-9-_]+)/);
+  return match ? match[1] : idOrUrl.trim();
+}
+
 // Helper to parse CSV rows accounting for commas inside quotes
 export function parseCSV(csvText) {
   const lines = csvText.split(/\r\n|\n/).filter(line => line.trim() !== '');
@@ -48,13 +55,12 @@ export function parseCSV(csvText) {
       ? isSentVal.toLowerCase().includes('đã') || isSentVal.toLowerCase().includes('yes') || isSentVal === 'true'
       : Boolean(isSentVal);
 
-    // Map flexible column names to standard keys
+    // Map flexible column names to standard keys (excluding table info)
     const guest = {
       id: rowObj.id || `guest-${i}`,
       prefix: rowObj.xungho || rowObj.prefix || rowObj.danhxung || 'Bạn',
       name: rowObj.hoten || rowObj.name || rowObj.ten || '',
       group: rowObj.nhom || rowObj.group || 'Khách Mời',
-      table: rowObj.ban || rowObj.table || '',
       message: rowObj.loinhan || rowObj.message || rowObj.ghichu || '',
       phone: rowObj.sdt || rowObj.phone || '',
       isSent: isSent
@@ -168,68 +174,57 @@ export function mergeConfig(remoteMap) {
 
 const GUESTS_CACHE_KEY = 'wedding_guests_data';
 const CONFIG_CACHE_KEY = 'wedding_config_data';
-const CACHE_TIME_KEY = 'wedding_last_fetch';
-const CACHE_DURATION = 30 * 1000; // 30 seconds cache for rapid sync
 
-export async function fetchWeddingConfigFromGoogleSheet(sheetId, forceRefresh = false) {
+export async function fetchWeddingConfigFromGoogleSheet(sheetIdOrUrl) {
+  const sheetId = cleanSheetId(sheetIdOrUrl);
   if (!sheetId) return fallbackConfig;
 
-  if (!forceRefresh) {
+  // Try candidate tab names for wedding config
+  const candidateTabs = ['ThongTin', 'thongtin', 'Thông tin', 'Config', 'config', 'Sheet2'];
+
+  for (const tab of candidateTabs) {
+    const url = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(tab)}&_t=${Date.now()}`;
     try {
-      const cached = localStorage.getItem(CONFIG_CACHE_KEY);
-      const time = localStorage.getItem(CACHE_TIME_KEY);
-      if (cached && time && (Date.now() - parseInt(time, 10) < CACHE_DURATION)) {
-        return JSON.parse(cached);
+      const res = await fetch(url, { cache: 'no-cache' });
+      if (res.ok) {
+        const csv = await res.text();
+        const map = parseConfigCSV(csv);
+        if (map && Object.keys(map).length > 0) {
+          const merged = mergeConfig(map);
+          try {
+            localStorage.setItem(CONFIG_CACHE_KEY, JSON.stringify(merged));
+          } catch {}
+          return merged;
+        }
       }
-    } catch (e) {
-      console.warn('Config cache read error:', e);
+    } catch (err) {
+      console.warn(`Failed to fetch tab ${tab}:`, err);
     }
   }
 
-  // Try fetching tab 'ThongTin'
-  const url = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&sheet=ThongTin&_t=${Date.now()}`;
+  // Fallback to offline cached config if available
   try {
-    const res = await fetch(url, { cache: 'no-cache' });
-    if (res.ok) {
-      const csv = await res.text();
-      const map = parseConfigCSV(csv);
-      if (map && Object.keys(map).length > 0) {
-        const merged = mergeConfig(map);
-        try {
-          localStorage.setItem(CONFIG_CACHE_KEY, JSON.stringify(merged));
-        } catch {}
-        return merged;
-      }
-    }
-  } catch (err) {
-    console.warn('Failed to fetch ThongTin tab from Google Sheet:', err);
-  }
+    const cached = localStorage.getItem(CONFIG_CACHE_KEY);
+    if (cached) return JSON.parse(cached);
+  } catch {}
 
   return fallbackConfig;
 }
 
-export async function fetchGuestsFromGoogleSheet(sheetId, sheetName = 'KhachMoi', forceRefresh = false) {
+export async function fetchGuestsFromGoogleSheet(sheetIdOrUrl, sheetName = 'KhachMoi') {
+  const sheetId = cleanSheetId(sheetIdOrUrl);
   if (!sheetId) return defaultGuests;
 
-  if (!forceRefresh) {
-    try {
-      const cachedData = localStorage.getItem(GUESTS_CACHE_KEY);
-      const cachedTime = localStorage.getItem(CACHE_TIME_KEY);
-      if (cachedData && cachedTime && (Date.now() - parseInt(cachedTime, 10) < CACHE_DURATION)) {
-        return JSON.parse(cachedData);
-      }
-    } catch (e) {
-      console.warn('Could not read from localStorage cache:', e);
-    }
-  }
-
-  // Try tab 'KhachMoi' first, fallback to 'Sheet1'
   const tryFetchSheet = async (name) => {
     const url = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(name)}&_t=${Date.now()}`;
-    const response = await fetch(url, { cache: 'no-cache' });
-    if (!response.ok) return null;
-    const csvText = await response.text();
-    return parseCSV(csvText);
+    try {
+      const response = await fetch(url, { cache: 'no-cache' });
+      if (!response.ok) return null;
+      const csvText = await response.text();
+      return parseCSV(csvText);
+    } catch {
+      return null;
+    }
   };
 
   try {
@@ -237,19 +232,27 @@ export async function fetchGuestsFromGoogleSheet(sheetId, sheetName = 'KhachMoi'
     if (!guests || guests.length === 0) {
       guests = await tryFetchSheet('Sheet1');
     }
+    if (!guests || guests.length === 0) {
+      guests = await tryFetchSheet('Trang tính 1');
+    }
 
     if (guests && guests.length > 0) {
       try {
         localStorage.setItem(GUESTS_CACHE_KEY, JSON.stringify(guests));
-        localStorage.setItem(CACHE_TIME_KEY, Date.now().toString());
       } catch (e) {
         console.warn('Could not save guests to localStorage:', e);
       }
       return guests;
     }
   } catch (error) {
-    console.warn('Failed to fetch from Google Sheet, using fallback:', error);
+    console.warn('Failed to fetch from Google Sheet, checking cache:', error);
   }
+
+  // If network error, use cached guests
+  try {
+    const cachedData = localStorage.getItem(GUESTS_CACHE_KEY);
+    if (cachedData) return JSON.parse(cachedData);
+  } catch {}
 
   return defaultGuests;
 }
@@ -282,12 +285,10 @@ export const GOOGLE_APPS_SCRIPT_CODE = `function doPost(e) {
   try {
     var data = JSON.parse(e.postData.contents);
     var ss = SpreadsheetApp.getActiveSpreadsheet();
-    // Tìm trang tính chứa danh sách khách (KhachMoi hoặc Sheet1)
     var sheet = ss.getSheetByName("KhachMoi") || ss.getSheetByName("Sheet1") || ss.getSheets()[0];
     var rows = sheet.getDataRange().getValues();
     
-    // Tìm cột 'trang_thai' (mặc định cột 8 / H nếu chưa có)
-    var colIdx = 8;
+    var colIdx = 7;
     for (var c = 0; c < rows[0].length; c++) {
       var h = String(rows[0][c]).toLowerCase().replace(/[^a-z0-9]/g, '');
       if (h === 'trangthai' || h === 'dagui' || h === 'status') {
@@ -296,7 +297,6 @@ export const GOOGLE_APPS_SCRIPT_CODE = `function doPost(e) {
       }
     }
     
-    // Đảm bảo cột có tiêu đề nếu đang trống
     if (sheet.getRange(1, colIdx).getValue() === "") {
       sheet.getRange(1, colIdx).setValue("trang_thai");
     }
