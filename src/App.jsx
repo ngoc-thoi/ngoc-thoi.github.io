@@ -54,7 +54,6 @@ export default function App() {
       {showAdmin && (
         <AdminDashboard
           onClose={closeAdmin}
-          onReloadData={() => window.location.reload()}
         />
       )}
     </div>

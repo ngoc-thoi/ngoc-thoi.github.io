@@ -22,7 +22,7 @@ import {
 } from '../services/googleSheetsService';
 import { weddingConfig } from '../config/weddingConfig';
 
-export default function AdminDashboard({ onClose, onReloadData }) {
+export default function AdminDashboard({ onClose }) {
   const [sheetInput, setSheetInput] = useState(() => {
     return localStorage.getItem('wedding_sheet_id') || weddingConfig.googleSheets.sheetId || '';
   });
@@ -82,7 +82,6 @@ export default function AdminDashboard({ onClose, onReloadData }) {
       } else {
         setStatusMsg(`Đang sử dụng danh sách khách mời mặc định (${data.length} khách).`);
       }
-      if (onReloadData) onReloadData();
     } catch (err) {
       setStatusMsg('Lỗi khi tải dữ liệu từ Google Sheet: ' + err.message);
     } finally {
@@ -420,7 +419,6 @@ export default function AdminDashboard({ onClose, onReloadData }) {
                     localStorage.setItem('wedding_youtube_url', ytInput.trim());
                     setYtSaved(true);
                     setTimeout(() => setYtSaved(false), 2500);
-                    if (onReloadData) onReloadData();
                   }}
                   className="w-full py-2.5 rounded-xl bg-wedding-red hover:bg-wedding-red-700 text-white font-semibold text-sm transition-colors flex items-center justify-center gap-2"
                 >
