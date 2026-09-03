@@ -37,7 +37,7 @@ export default function App() {
   return (
     <div className="min-h-screen bg-[#FFFDF9] text-stone-800 font-sans relative selection:bg-wedding-red-800 selection:text-amber-200">
       {/* Background Wedding Music Player */}
-      <AudioPlayer config={config} />
+      <AudioPlayer config={config} isAdminOpen={showAdmin} />
 
       {/* Falling Flower Confetti / Petals */}
       <PetalEffects />

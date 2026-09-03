@@ -75,8 +75,9 @@ export default function AdminDashboard({ onClose, config = weddingConfig, onRefr
       if (id) {
         localStorage.setItem('wedding_sheet_id', id);
       }
-      const data = await fetchGuestsFromGoogleSheet(id, 'KhachMoi', forceRefresh);
+      const data = await fetchGuestsFromGoogleSheet(id, 'KhachMoi');
       setGuests(data);
+      await fetchWeddingConfigFromGoogleSheet(id);
 
       // Merge remote status from Google Sheet into local sentMap
       const updatedSentMap = { ...sentMap };
@@ -542,6 +543,7 @@ export default function AdminDashboard({ onClose, config = weddingConfig, onRefr
                   onClick={() => {
                     localStorage.setItem('wedding_youtube_url', ytInput.trim());
                     setYtSaved(true);
+                    if (onRefreshData) onRefreshData();
                     setTimeout(() => setYtSaved(false), 2500);
                   }}
                   className="w-full py-2.5 rounded-xl bg-wedding-red hover:bg-wedding-red-700 text-white font-semibold text-sm transition-colors flex items-center justify-center gap-2"

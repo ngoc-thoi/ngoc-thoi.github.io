@@ -36,10 +36,16 @@ export default function Countdown({ config = weddingConfig }) {
     return () => clearInterval(interval);
   }, [config.weddingDate]);
 
-  // Google Calendar URL generator
+  // Dynamic Google Calendar URL generator
   const getGoogleCalendarUrl = () => {
-    const startTime = "20261025T040000Z";
-    const endTime = "20261025T080000Z";
+    let d = new Date(config.weddingDate || '2026-10-25T11:00:00');
+    if (isNaN(d.getTime())) d = new Date('2026-10-25T11:00:00');
+    const pad = (n) => String(n).padStart(2, '0');
+    const formatCalDate = (date) => 
+      `${date.getUTCFullYear()}${pad(date.getUTCMonth() + 1)}${pad(date.getUTCDate())}T${pad(date.getUTCHours())}${pad(date.getUTCMinutes())}00Z`;
+    const startTime = formatCalDate(d);
+    const endD = new Date(d.getTime() + 4 * 60 * 60 * 1000); // 4-hour wedding celebration
+    const endTime = formatCalDate(endD);
     const title = encodeURIComponent(`Đám Cưới ${config.groom.shortName} & ${config.bride.shortName}`);
     const details = encodeURIComponent(`Lễ thành hôn & tiệc cưới của ${config.groom.fullName} & ${config.bride.fullName}`);
     const location = encodeURIComponent(`${config.restaurant.name}, ${config.restaurant.address}`);

@@ -3,15 +3,29 @@ import { Volume2, VolumeX, Music, Disc } from 'lucide-react';
 import { weddingConfig } from '../config/weddingConfig';
 import { extractYouTubeId } from '../utils/youtube';
 
-export default function AudioPlayer({ config = weddingConfig }) {
+export default function AudioPlayer({ config = weddingConfig, isAdminOpen = false }) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isReady, setIsReady] = useState(false);
   const [hasInteracted, setHasInteracted] = useState(false);
   const playerRef = useRef(null);
+  const isAdminOpenRef = useRef(isAdminOpen);
 
-  // Get YouTube URL from localStorage (customized in #admin) or dynamic config
+  // Get YouTube URL from dynamic config or fallback
   const youtubeUrl = localStorage.getItem('wedding_youtube_url') || config.music.youtubeUrl;
   const videoId = extractYouTubeId(youtubeUrl);
+
+  // Auto turn off/pause music when Admin page is opened
+  useEffect(() => {
+    isAdminOpenRef.current = isAdminOpen;
+    if (isAdminOpen && playerRef.current && typeof playerRef.current.pauseVideo === 'function') {
+      try {
+        playerRef.current.pauseVideo();
+        setIsPlaying(false);
+      } catch (err) {
+        console.warn('Error auto-pausing music on admin page:', err);
+      }
+    }
+  }, [isAdminOpen]);
 
   useEffect(() => {
     if (!videoId) return;
@@ -39,14 +53,24 @@ export default function AudioPlayer({ config = weddingConfig }) {
           events: {
             onReady: (event) => {
               setIsReady(true);
-              // Try auto-play
-              event.target.setVolume(80);
-              event.target.playVideo();
+              // Do NOT autoplay if user is on admin page
+              if (!isAdminOpenRef.current) {
+                event.target.setVolume(80);
+                event.target.playVideo();
+              }
             },
             onStateChange: (event) => {
               if (event.data === window.YT.PlayerState.PLAYING) {
-                setIsPlaying(true);
-                setHasInteracted(true);
+                // If admin page opened in the meantime, immediately pause
+                if (isAdminOpenRef.current) {
+                  if (playerRef.current && typeof playerRef.current.pauseVideo === 'function') {
+                    playerRef.current.pauseVideo();
+                  }
+                  setIsPlaying(false);
+                } else {
+                  setIsPlaying(true);
+                  setHasInteracted(true);
+                }
               } else if (event.data === window.YT.PlayerState.PAUSED || event.data === window.YT.PlayerState.ENDED) {
                 setIsPlaying(false);
               }
@@ -71,6 +95,8 @@ export default function AudioPlayer({ config = weddingConfig }) {
 
     // Attempt play on first user interaction (touch or click)
     const handleFirstInteraction = () => {
+      // Do NOT play music when user clicks inside admin page
+      if (isAdminOpenRef.current) return;
       setHasInteracted(true);
       if (playerRef.current && typeof playerRef.current.playVideo === 'function') {
         playerRef.current.playVideo();
@@ -111,7 +137,7 @@ export default function AudioPlayer({ config = weddingConfig }) {
   };
 
   return (
-    <div className="fixed bottom-5 left-5 z-50 flex items-center space-x-2 select-none">
+    <div className={`fixed bottom-5 left-5 z-50 flex items-center space-x-2 select-none ${isAdminOpen ? 'hidden' : ''}`}>
       {/* Hidden YouTube iFrame container */}
       <div 
         style={{
