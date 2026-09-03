@@ -16,6 +16,8 @@ import {
 } from 'lucide-react';
 import { 
   fetchGuestsFromGoogleSheet, 
+  updateGuestStatusInGoogleSheet,
+  GOOGLE_APPS_SCRIPT_CODE,
   GOOGLE_SHEET_TEMPLATE_CSV 
 } from '../services/googleSheetsService';
 import { weddingConfig } from '../config/weddingConfig';
@@ -28,6 +30,12 @@ export default function AdminDashboard({ onClose, onReloadData }) {
     return localStorage.getItem('wedding_youtube_url') || weddingConfig.music.youtubeUrl || '';
   });
   const [ytSaved, setYtSaved] = useState(false);
+  const [scriptInput, setScriptInput] = useState(() => {
+    return localStorage.getItem('wedding_apps_script_url') || '';
+  });
+  const [scriptSaved, setScriptSaved] = useState(false);
+  const [codeCopied, setCodeCopied] = useState(false);
+  const [syncToast, setSyncToast] = useState('');
   const [guests, setGuests] = useState([]);
   const [loading, setLoading] = useState(false);
   const [statusMsg, setStatusMsg] = useState('');
@@ -50,13 +58,24 @@ export default function AdminDashboard({ onClose, onReloadData }) {
     return match ? match[1] : input.trim();
   };
 
-  const loadGuests = async (idToUse) => {
+  const loadGuests = async (idToUse, forceRefresh = false) => {
     setLoading(true);
     setStatusMsg('');
     const id = extractSheetId(idToUse);
     try {
-      const data = await fetchGuestsFromGoogleSheet(id);
+      const data = await fetchGuestsFromGoogleSheet(id, 'Sheet1', forceRefresh);
       setGuests(data);
+
+      // Merge remote status from Google Sheet into local sentMap
+      const updatedSentMap = { ...sentMap };
+      data.forEach(g => {
+        if (g.isSent) {
+          updatedSentMap[g.id] = true;
+        }
+      });
+      setSentMap(updatedSentMap);
+      localStorage.setItem('wedding_sent_checklist', JSON.stringify(updatedSentMap));
+
       if (id) {
         localStorage.setItem('wedding_sheet_id', id);
         setStatusMsg(`Đã kết nối thành công! Đã tải ${data.length} khách mời.`);
@@ -72,13 +91,26 @@ export default function AdminDashboard({ onClose, onReloadData }) {
   };
 
   useEffect(() => {
-    loadGuests(sheetInput);
+    loadGuests(sheetInput, true);
   }, []);
 
-  const toggleSent = (guestId) => {
-    const updated = { ...sentMap, [guestId]: !sentMap[guestId] };
+  const toggleSent = async (guestId) => {
+    const newStatus = !sentMap[guestId];
+    const updated = { ...sentMap, [guestId]: newStatus };
     setSentMap(updated);
     localStorage.setItem('wedding_sent_checklist', JSON.stringify(updated));
+
+    // If Google Apps Script URL is configured, sync directly to Google Sheet in real time
+    if (scriptInput) {
+      setSyncToast(`Đang đồng bộ tới Google Sheet...`);
+      const ok = await updateGuestStatusInGoogleSheet(scriptInput, guestId, newStatus);
+      if (ok) {
+        setSyncToast(`Đã đồng bộ "${newStatus ? 'Đã gửi' : 'Chưa gửi'}" lên Google Sheet!`);
+      } else {
+        setSyncToast(`Lỗi đồng bộ Google Sheet. Vui lòng kiểm tra lại URL Script.`);
+      }
+      setTimeout(() => setSyncToast(''), 3000);
+    }
   };
 
   const copyInviteMessage = (guest) => {
@@ -197,14 +229,21 @@ export default function AdminDashboard({ onClose, onReloadData }) {
                 </select>
 
                 <button
-                  onClick={() => loadGuests(sheetInput)}
+                  onClick={() => loadGuests(sheetInput, true)}
                   className="px-4 py-2 rounded-xl bg-stone-200 hover:bg-stone-300 text-stone-700 text-sm font-medium flex items-center gap-1.5 shrink-0"
-                  title="Làm mới dữ liệu từ Google Sheet"
+                  title="Làm mới dữ liệu từ Google Sheet ngay lập tức"
                 >
                   <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
                   <span>Đồng bộ lại</span>
                 </button>
               </div>
+
+              {/* Real-time sync notification toast */}
+              {syncToast && (
+                <div className="p-3 rounded-xl bg-amber-50 text-wedding-red font-medium text-xs border border-amber-200 flex items-center justify-between shadow-sm">
+                  <span>{syncToast}</span>
+                </div>
+              )}
 
               {/* Guest Table / Cards */}
               <div className="space-y-2.5">
@@ -388,6 +427,60 @@ export default function AdminDashboard({ onClose, onReloadData }) {
                   <Music className="w-4 h-4" />
                   <span>{ytSaved ? "Đã Lưu & Đang Áp Dụng Nhạc Mới!" : "Lưu Link Nhạc YouTube"}</span>
                 </button>
+              </div>
+
+              {/* 2-Way Real-Time Sync Configuration */}
+              <div className="bg-white p-6 rounded-2xl border border-stone-200 shadow-sm space-y-4">
+                <div className="flex items-center justify-between">
+                  <h3 className="font-bold text-lg text-stone-800 flex items-center gap-2">
+                    <RefreshCw className="w-5 h-5 text-blue-600" />
+                    <span>Đồng Bộ 2 Chiều Trực Tiếp Lên Google Sheet</span>
+                  </h3>
+                  <button
+                    onClick={() => {
+                      navigator.clipboard.writeText(GOOGLE_APPS_SCRIPT_CODE);
+                      setCodeCopied(true);
+                      setTimeout(() => setCodeCopied(false), 2500);
+                    }}
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-700 text-xs font-semibold border border-blue-200"
+                  >
+                    <Copy className="w-3.5 h-3.5" />
+                    <span>{codeCopied ? "Đã sao chép mã!" : "Sao Chép Mã Apps Script"}</span>
+                  </button>
+                </div>
+                <p className="text-sm text-stone-600">
+                  Khi tích chọn <b>[✓] Đã gửi</b> trên web, trạng thái sẽ tự động được ghi thẳng vào cột H (<b>trang_thai</b>) trên file Google Sheet của bạn ngay tức thì!
+                </p>
+                <div className="space-y-2">
+                  <label className="block text-xs font-bold uppercase text-stone-700">
+                    Đường dẫn Web App (Apps Script Webhook URL)
+                  </label>
+                  <input
+                    type="text"
+                    value={scriptInput}
+                    onChange={(e) => setScriptInput(e.target.value)}
+                    placeholder="https://script.google.com/macros/s/AKfycb.../exec"
+                    className="w-full px-4 py-2.5 rounded-xl border border-stone-300 text-sm focus:border-wedding-red focus:outline-none font-mono"
+                  />
+                </div>
+                <button
+                  onClick={() => {
+                    localStorage.setItem('wedding_apps_script_url', scriptInput.trim());
+                    setScriptSaved(true);
+                    setTimeout(() => setScriptSaved(false), 2500);
+                  }}
+                  className="w-full py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm transition-colors flex items-center justify-center gap-2"
+                >
+                  <Check className="w-4 h-4" />
+                  <span>{scriptSaved ? "Đã Lưu Cấu Hình Đồng Bộ 2 Chiều!" : "Lưu URL Đồng Bộ 2 Chiều"}</span>
+                </button>
+                
+                <div className="p-3 bg-blue-50/70 rounded-xl border border-blue-100 text-xs text-blue-900 space-y-1.5">
+                  <p className="font-semibold text-blue-950">⚡ 3 bước thiết lập đồng bộ 2 chiều (Chỉ làm 1 lần):</p>
+                  <p>1. Mở file Google Sheet của bạn ➔ chọn <b>Tiện ích mở rộng (Extensions)</b> ➔ <b>Apps Script</b>.</p>
+                  <p>2. Xoá hết mã cũ, bấm nút <b>"Sao Chép Mã Apps Script"</b> ở trên rồi dán vào.</p>
+                  <p>3. Bấm <b>Triển khai (Deploy)</b> ➔ <b>Tùy chọn triển khai mới (New deployment)</b> ➔ Chọn biểu tượng bánh răng chọn <b>Ứng dụng web (Web app)</b> ➔ Người có quyền truy cập: <b>Bất kỳ ai (Anyone)</b> ➔ Bấm <b>Triển khai</b> và dán link vào ô này!</p>
+                </div>
               </div>
 
               {/* Step by step guide */}
