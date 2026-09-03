@@ -76,9 +76,9 @@ export const weddingConfig = {
 
   // Background Music (Supports any YouTube URL or Video ID)
   music: {
-    title: "Ánh Nắng Của Anh (Nhạc Cưới Lãng Mạn)",
+    title: "Ánh Nắng Của Anh - Đức Phúc",
     // Paste any YouTube URL or Video ID here
-    youtubeUrl: "https://www.youtube.com/watch?v=1YBl3Zbt80A",
+    youtubeUrl: "https://www.youtube.com/watch?v=3UyotSd-Cp4",
     // Fallback direct audio if needed
     fallbackAudioUrl: ""
   },
