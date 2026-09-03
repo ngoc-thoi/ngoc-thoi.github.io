@@ -3,6 +3,14 @@ import { weddingConfig } from '../config/weddingConfig';
 import SongHyIcon from './SongHyIcon';
 
 export default function CoupleStory({ config = weddingConfig }) {
+  const groomAvatar = (config.groom?.avatar && !config.groom.avatar.includes('unsplash.com'))
+    ? config.groom.avatar
+    : "https://cdn.chungdoi.com/uploads/183ce68b-10af-481e-ac82-5c983182d2c8.jpg";
+
+  const brideAvatar = (config.bride?.avatar && !config.bride.avatar.includes('unsplash.com'))
+    ? config.bride.avatar
+    : "https://cdn.chungdoi.com/uploads/6bdc27f3-d2b7-43f3-af42-7aea757fd7f5.jpg";
+
   return (
     <section className="py-20 px-4 bg-gradient-to-b from-[#FFFDF9] via-rose-50/30 to-[#FFFDF9]">
       <div className="max-w-4xl mx-auto text-center">
@@ -24,7 +32,7 @@ export default function CoupleStory({ config = weddingConfig }) {
           <div className="flex flex-col items-center bg-white p-6 sm:p-8 rounded-3xl shadow-md border border-amber-200/60 transition-transform duration-300 hover:-translate-y-1">
             <div className="relative mb-5">
               <img
-                src={config.groom.avatar}
+                src={groomAvatar}
                 alt={config.groom.fullName}
                 className="w-40 h-40 sm:w-48 sm:h-48 rounded-full object-cover object-center border-4 border-amber-300 shadow-md"
               />
@@ -48,7 +56,7 @@ export default function CoupleStory({ config = weddingConfig }) {
           <div className="flex flex-col items-center bg-white p-6 sm:p-8 rounded-3xl shadow-md border border-amber-200/60 transition-transform duration-300 hover:-translate-y-1">
             <div className="relative mb-5">
               <img
-                src={config.bride.avatar}
+                src={brideAvatar}
                 alt={config.bride.fullName}
                 className="w-40 h-40 sm:w-48 sm:h-48 rounded-full object-cover object-center border-4 border-amber-300 shadow-md"
               />

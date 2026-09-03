@@ -29,6 +29,14 @@ export function useGuest() {
     const directTable = params.get('table') || params.get('b') || '';
     const directMsg = params.get('msg') || '';
 
+    // Purge any stale cache with placeholder unsplash images
+    try {
+      const cached = localStorage.getItem('wedding_config_data');
+      if (cached && cached.includes('unsplash.com')) {
+        localStorage.removeItem('wedding_config_data');
+      }
+    } catch {}
+
     const savedSheetId = localStorage.getItem('wedding_sheet_id') || initialFallbackConfig.googleSheets.sheetId;
 
     // 1. Fetch live Wedding Configuration (Bride, Groom, Parents, Restaurant, Address, etc.)

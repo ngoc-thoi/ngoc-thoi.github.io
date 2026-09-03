@@ -52,9 +52,7 @@ export default function App() {
         <EnvelopeModal
           guest={guest}
           config={config}
-          onOpen={() => {
-            // User opened envelope
-          }}
+          onClose={() => setShowEnvelope(false)}
         />
       )}
 

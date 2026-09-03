@@ -142,6 +142,8 @@ export function mergeConfig(remoteMap) {
     rawDate = rawDate.replace(' ', 'T');
   }
 
+  const isPlaceholder = (url) => !url || typeof url !== 'string' || url.includes('unsplash.com');
+
   return {
     eventType: fallbackConfig.eventType,
     heroPhoto: fallbackConfig.heroPhoto,
@@ -152,7 +154,7 @@ export function mergeConfig(remoteMap) {
       father: remoteMap['chu_re_bo'] || fallbackConfig.groom.father,
       mother: remoteMap['chu_re_me'] || fallbackConfig.groom.mother,
       address: remoteMap['chu_re_dia_chi'] || fallbackConfig.groom.address,
-      avatar: remoteMap['chu_re_anh'] || fallbackConfig.groom.avatar,
+      avatar: !isPlaceholder(remoteMap['chu_re_anh']) ? remoteMap['chu_re_anh'] : fallbackConfig.groom.avatar,
     },
     bride: {
       ...fallbackConfig.bride,
@@ -161,7 +163,7 @@ export function mergeConfig(remoteMap) {
       father: remoteMap['co_dau_bo'] || fallbackConfig.bride.father,
       mother: remoteMap['co_dau_me'] || fallbackConfig.bride.mother,
       address: remoteMap['co_dau_dia_chi'] || fallbackConfig.bride.address,
-      avatar: remoteMap['co_dau_anh'] || fallbackConfig.bride.avatar,
+      avatar: !isPlaceholder(remoteMap['co_dau_anh']) ? remoteMap['co_dau_anh'] : fallbackConfig.bride.avatar,
     },
     weddingDate: rawDate,
     displayDate: remoteMap['ngay_cuoi_hien_thi'] || fallbackConfig.displayDate,
